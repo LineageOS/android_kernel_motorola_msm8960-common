@@ -408,7 +408,6 @@ static int msm8960_enable_codec_ext_clk(struct snd_soc_codec *codec, int enable,
 		clk_users++;
 		pr_debug("%s: clk_users = %d\n", __func__, clk_users);
 		if (clk_users == 1) {
-			codec_clk = clk_get(NULL, "i2s_spkr_osr_clk");
 			if (codec_clk) {
 				clk_set_rate(codec_clk, TABLA_EXT_CLK_RATE);
 				clk_enable(codec_clk);
@@ -429,7 +428,6 @@ static int msm8960_enable_codec_ext_clk(struct snd_soc_codec *codec, int enable,
 					 __func__, clk_users);
 				tabla_mclk_enable(codec, 0, dapm);
 				clk_disable(codec_clk);
-				clk_put(codec_clk);
 			}
 		} else {
 			pr_err("%s: Error releasing Tabla MCLK\n", __func__);
@@ -854,6 +852,7 @@ static int msm8960_audrx_init(struct snd_soc_pcm_runtime *rtd)
 	int err;
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
 	u8 tabla_version;
 	struct tabla_pdata *pdata = dev_get_platdata(codec->dev->parent);
 	struct pm_gpio jack_gpio_cfg = {
@@ -864,7 +863,7 @@ static int msm8960_audrx_init(struct snd_soc_pcm_runtime *rtd)
 		.inv_int_pol = 0,
 	};
 
-	pr_debug("%s()\n", __func__);
+	pr_debug("%s(), dev_name%s\n", __func__, dev_name(cpu_dai->dev));
 
 	if (machine_is_msm8960_liquid()) {
 		top_spk_pamp_gpio = (PM8921_GPIO_PM_TO_SYS(19));
@@ -916,6 +915,8 @@ static int msm8960_audrx_init(struct snd_soc_pcm_runtime *rtd)
 		pr_err("failed to create new jack\n");
 		return err;
 	}
+
+	codec_clk = clk_get(cpu_dai->dev, "osr_clk");
 
 	if (pdata->hs_detect_gpio_enable) {
 		mbhc_cfg.gpio = PM8921_GPIO_PM_TO_SYS(JACK_DETECT_GPIO);
