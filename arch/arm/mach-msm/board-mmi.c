@@ -94,8 +94,8 @@
 
 #ifdef CONFIG_WCD9310_CODEC
 #include <linux/slimbus/slimbus.h>
-#include <linux/mfd/wcd9310/core.h>
-#include <linux/mfd/wcd9310/pdata.h>
+#include <linux/mfd/wcd9xxx/core.h>
+#include <linux/mfd/wcd9xxx/pdata.h>
 #endif
 
 #ifdef CONFIG_LEDS_LM3559

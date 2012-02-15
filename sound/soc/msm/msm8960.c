@@ -16,8 +16,9 @@
 #include <linux/mfd/pm8xxx/pm8921.h>
 #include <linux/platform_device.h>
 #include <linux/mfd/pm8xxx/pm8921.h>
-#include <linux/mfd/wcd9310/registers.h>
-#include <linux/mfd/wcd9310/core.h>
+#include <linux/mfd/wcd9xxx/wcd9310_registers.h>
+#include <linux/mfd/wcd9xxx/core.h>
+#include <linux/mfd/wcd9xxx/pdata.h>
 #include <linux/slab.h>
 #include <sound/core.h>
 #include <sound/soc.h>
@@ -27,8 +28,6 @@
 #include <sound/jack.h>
 #include <asm/mach-types.h>
 #include <mach/socinfo.h>
-#include <linux/mfd/wcd9310/core.h>
-#include <linux/mfd/wcd9310/pdata.h>
 #include "msm-pcm-routing.h"
 #include "../codecs/wcd9310.h"
 #include <linux/emu-accy.h>
@@ -854,7 +853,7 @@ static int msm8960_audrx_init(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
 	u8 tabla_version;
-	struct tabla_pdata *pdata = dev_get_platdata(codec->dev->parent);
+	struct wcd9xxx_pdata *pdata = dev_get_platdata(codec->dev->parent);
 	struct pm_gpio jack_gpio_cfg = {
 		.direction = PM_GPIO_DIR_IN,
 		.pull = PM_GPIO_PULL_NO,
