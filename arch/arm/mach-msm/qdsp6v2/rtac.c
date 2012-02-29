@@ -467,8 +467,14 @@ u32 send_adm_apr(void *buf, u32 opcode)
 
 
 	if (payload_size > MAX_PAYLOAD_SIZE) {
+<<<<<<< HEAD
 		pr_err("%s: Invalid payload size = %d\n",
 			__func__, payload_size);
+=======
+
+			pr_err("%s: Invalid payload size = %d\n",
+				__func__, payload_size);
+>>>>>>> 94ad7e2... ASOC: msm: Modify debug messages and conditional checks
 		goto done;
 	}
 
@@ -803,7 +809,11 @@ u32 send_voice_apr(u32 mode, void *buf, u32 opcode)
 
 	if (payload_size > MAX_PAYLOAD_SIZE) {
 		pr_err("%s: Invalid payload size = %d\n",
+<<<<<<< HEAD
 			__func__, payload_size);
+=======
+				__func__, payload_size);
+>>>>>>> 94ad7e2... ASOC: msm: Modify debug messages and conditional checks
 		goto done;
 	}
 
