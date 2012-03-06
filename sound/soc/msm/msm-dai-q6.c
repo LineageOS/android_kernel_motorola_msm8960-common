@@ -667,6 +667,8 @@ static int msm_dai_q6_hw_params(struct snd_pcm_substream *substream,
 	case SLIMBUS_1_RX:
 	case SLIMBUS_0_TX:
 	case SLIMBUS_1_TX:
+	case SLIMBUS_4_RX:
+	case SLIMBUS_4_TX:
 		rc = msm_dai_q6_slim_bus_hw_params(params, dai,
 				substream->stream);
 		break;
@@ -1200,6 +1202,7 @@ static int msm_dai_q6_set_channel_map(struct snd_soc_dai *dai,
 	switch (dai->id) {
 	case SLIMBUS_0_RX:
 	case SLIMBUS_1_RX:
+	case SLIMBUS_4_RX:
 		/* channel number to be between 128 and 255. For RX port
 		 * use channel numbers from 138 to 144, for TX port
 		 * use channel numbers from 128 to 137
@@ -1222,6 +1225,7 @@ static int msm_dai_q6_set_channel_map(struct snd_soc_dai *dai,
 		break;
 	case SLIMBUS_0_TX:
 	case SLIMBUS_1_TX:
+	case SLIMBUS_4_TX:
 		/* channel number to be between 128 and 255. For RX port
 		 * use channel numbers from 138 to 144, for TX port
 		 * use channel numbers from 128 to 137
@@ -1553,10 +1557,12 @@ static __devinit int msm_dai_q6_dev_probe(struct platform_device *pdev)
 		break;
 
 	case SLIMBUS_0_RX:
+	case SLIMBUS_4_RX:
 		rc = snd_soc_register_dai(&pdev->dev,
 				&msm_dai_q6_slimbus_rx_dai);
 		break;
 	case SLIMBUS_0_TX:
+	case SLIMBUS_4_TX:
 		rc = snd_soc_register_dai(&pdev->dev,
 				&msm_dai_q6_slimbus_tx_dai);
 		break;
