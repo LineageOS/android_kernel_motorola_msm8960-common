@@ -1308,6 +1308,17 @@ static struct snd_soc_dai_link msm8960_dai_common[] = {
 		.ignore_suspend = 1,
 	},
 	{
+		.name = "VoLTE",
+		.stream_name = "VoLTE",
+		.cpu_dai_name   = "VoLTE",
+		.platform_name  = "msm-pcm-voice",
+		.dynamic = 1,
+		.dsp_link = &fe_media,
+		.be_id = MSM_FRONTEND_DAI_VOLTE,
+		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
+		.ignore_suspend = 1,
+	},
+	{
 		.name = "SGLTE",
 		.stream_name = "SGLTE",
 		.cpu_dai_name   = "SGLTE",
@@ -1317,6 +1328,15 @@ static struct snd_soc_dai_link msm8960_dai_common[] = {
 		.be_id = MSM_FRONTEND_DAI_SGLTE,
 		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
 		.ignore_suspend = 1,
+	},
+	{
+		.name = "MSM8960 LowLatency",
+		.stream_name = "MultiMedia5",
+		.cpu_dai_name	= "MultiMedia5",
+		.platform_name  = "msm-lowlatency-pcm-dsp",
+		.dynamic = 1,
+		.dsp_link = &fe_media,
+		.be_id = MSM_FRONTEND_DAI_MULTIMEDIA5,
 	},
 	/* Backend BT/FM DAI Links */
 	{
@@ -1341,15 +1361,6 @@ static struct snd_soc_dai_link msm8960_dai_common[] = {
 		.no_pcm = 1,
 		.be_id = MSM_BACKEND_DAI_INT_BT_SCO_TX,
 		.be_hw_params_fixup = msm8960_btsco_be_hw_params_fixup,
-	},
-	{
-		.name = "MSM8960 LowLatency",
-		.stream_name = "MultiMedia5",
-		.cpu_dai_name	= "MultiMedia5",
-		.platform_name  = "msm-lowlatency-pcm-dsp",
-		.dynamic = 1,
-		.dsp_link = &fe_media,
-		.be_id = MSM_FRONTEND_DAI_MULTIMEDIA5,
 	},
 	{
 		.name = LPASS_BE_INT_FM_RX,
