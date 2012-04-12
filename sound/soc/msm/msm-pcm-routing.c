@@ -190,9 +190,9 @@ static struct msm_pcm_routing_bdai_data msm_bedais[MSM_BACKEND_DAI_MAX] = {
 	{ SLIMBUS_1_TX, 0, 0, 0, 0, 0},
 	{ SLIMBUS_4_RX, 0, 0, 0, 0, 0},
 	{ SLIMBUS_4_TX, 0, 0, 0, 0, 0},
+	{ SLIMBUS_EXTPROC_RX, 0, 0, 0, 0, 0},
 	{ SECONDARY_PCM_RX, 0, 0, 0, 0, 0},
 	{ SECONDARY_PCM_TX, 0, 0, 0, 0, 0},
-	{ SLIMBUS_INVALID, 0, 0, 0, 0, 0},
 };
 
 
@@ -236,10 +236,10 @@ static void msm_pcm_routing_build_matrix(int fedai_id, int dspst_id,
 		MSM_AFE_PORT_TYPE_RX : MSM_AFE_PORT_TYPE_TX);
 
 	for (i = 0; i < MSM_BACKEND_DAI_MAX; i++) {
-		if ((afe_get_port_type(msm_bedais[i].port_id) ==
-			port_type) &&
-			msm_bedais[i].active && (test_bit(fedai_id,
-				&msm_bedais[i].fe_sessions)))
+		if ((i != MSM_BACKEND_DAI_EXTPROC_RX) &&
+		    (afe_get_port_type(msm_bedais[i].port_id) == port_type) &&
+		    (msm_bedais[i].active) &&
+		    (test_bit(fedai_id, &msm_bedais[i].fe_sessions)))
 			payload.copp_ids[payload.num_copps++] =
 					msm_bedais[i].port_id;
 	}
@@ -275,11 +275,10 @@ void msm_pcm_routing_reg_psthr_stream(int fedai_id, int dspst_id,
 
 	fe_dai_map[fedai_id][session_type].strm_id = dspst_id;
 	for (i = 0; i < MSM_BACKEND_DAI_MAX; i++) {
-		if ((afe_get_port_type(msm_bedais[i].port_id) ==
-			port_type) && msm_bedais[i].active &&
-			(test_bit(fedai_id,
-			&msm_bedais[i].fe_sessions))) {
-
+		if ((i != MSM_BACKEND_DAI_EXTPROC_RX) &&
+		    (afe_get_port_type(msm_bedais[i].port_id) == port_type) &&
+		    (msm_bedais[i].active) &&
+		    (test_bit(fedai_id, &msm_bedais[i].fe_sessions))) {
 			mode = afe_get_port_type(msm_bedais[i].port_id);
 			if (enable)
 				adm_connect_afe_port(mode, dspst_id,
@@ -327,10 +326,11 @@ void msm_pcm_routing_reg_phy_stream(int fedai_id, bool perf_mode, int dspst_id,
 	for (i = 0; i < MSM_BACKEND_DAI_MAX; i++) {
 		if (test_bit(fedai_id, &msm_bedais[i].fe_sessions))
 			msm_bedais[i].perf_mode = perf_mode;
-		if ((afe_get_port_type(msm_bedais[i].port_id) ==
-			port_type) && msm_bedais[i].active &&
-			(test_bit(fedai_id,
-			&msm_bedais[i].fe_sessions))) {
+		if ((i != MSM_BACKEND_DAI_EXTPROC_RX) &&
+		    (afe_get_port_type(msm_bedais[i].port_id) == port_type) &&
+		    (msm_bedais[i].active) &&
+		    (test_bit(fedai_id, &msm_bedais[i].fe_sessions))) {
+
 			channels = msm_bedais[i].channel;
 
 			if ((stream_type == SNDRV_PCM_STREAM_PLAYBACK) &&
@@ -404,10 +404,10 @@ void msm_pcm_routing_dereg_phy_stream(int fedai_id, int stream_type)
 	mutex_lock(&routing_lock);
 
 	for (i = 0; i < MSM_BACKEND_DAI_MAX; i++) {
-		if ((afe_get_port_type(msm_bedais[i].port_id) ==
-			port_type) && msm_bedais[i].active &&
-			(test_bit(fedai_id,
-			&msm_bedais[i].fe_sessions)))
+		if ((i != MSM_BACKEND_DAI_EXTPROC_RX) &&
+		    (afe_get_port_type(msm_bedais[i].port_id) == port_type) &&
+		    (msm_bedais[i].active) &&
+		    (test_bit(fedai_id, &msm_bedais[i].fe_sessions)))
 			adm_close(msm_bedais[i].port_id);
 	}
 
@@ -1572,7 +1572,7 @@ static const struct snd_kcontrol_new hdmi_rx_voice_mixer_controls[] = {
 };
 
 static const struct snd_kcontrol_new stub_rx_mixer_controls[] = {
-	SOC_SINGLE_EXT("Voice Stub", MSM_BACKEND_DAI_INVALID,
+	SOC_SINGLE_EXT("Voice Stub", MSM_BACKEND_DAI_EXTPROC_RX,
 	MSM_FRONTEND_DAI_VOICE_STUB, 1, 0, msm_routing_get_voice_stub_mixer,
 	msm_routing_put_voice_stub_mixer),
 };
@@ -1653,7 +1653,7 @@ static const struct snd_kcontrol_new tx_voip_mixer_controls[] = {
 };
 
 static const struct snd_kcontrol_new tx_voice_stub_mixer_controls[] = {
-	SOC_SINGLE_EXT("STUB_TX_HL", MSM_BACKEND_DAI_INVALID,
+	SOC_SINGLE_EXT("STUB_TX_HL", MSM_BACKEND_DAI_EXTPROC_RX,
 	MSM_FRONTEND_DAI_VOICE_STUB, 1, 0, msm_routing_get_voice_stub_mixer,
 	msm_routing_put_voice_stub_mixer),
 	SOC_SINGLE_EXT("INTERNAL_BT_SCO_TX", MSM_BACKEND_DAI_INT_BT_SCO_TX,
@@ -2687,10 +2687,8 @@ int msm_routing_check_backend_enabled(int fedai_id)
 		return 0;
 	}
 	for (i = 0; i < MSM_BACKEND_DAI_MAX; i++) {
-		if ((test_bit(fedai_id,
-			&msm_bedais[i].fe_sessions))) {
+		if (test_bit(fedai_id, &msm_bedais[i].fe_sessions))
 			return msm_bedais[i].active;
-		}
 	}
 	return 0;
 }
