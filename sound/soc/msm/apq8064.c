@@ -336,7 +336,7 @@ static int msm_enable_codec_ext_clk(struct snd_soc_codec *codec, int enable,
 
 		if (codec_clk) {
 			clk_set_rate(codec_clk, TABLA_EXT_CLK_RATE);
-			clk_enable(codec_clk);
+			clk_prepare_enable(codec_clk);
 			tabla_mclk_enable(codec, 1, dapm);
 		} else {
 			pr_err("%s: Error setting Tabla MCLK\n", __func__);
@@ -352,7 +352,7 @@ static int msm_enable_codec_ext_clk(struct snd_soc_codec *codec, int enable,
 			pr_debug("%s: disabling MCLK. clk_users = %d\n",
 					 __func__, clk_users);
 			tabla_mclk_enable(codec, 0, dapm);
-			clk_disable(codec_clk);
+			clk_disable_unprepare(codec_clk);
 		}
 	}
 	return 0;
@@ -374,7 +374,7 @@ static int msm_mclk_event(struct snd_soc_dapm_widget *w,
 
 		if (codec_clk) {
 			clk_set_rate(codec_clk, 12288000);
-			clk_enable(codec_clk);
+			clk_prepare_enable(codec_clk);
 			tabla_mclk_enable(w->codec, 1, true);
 
 		} else {
@@ -395,9 +395,9 @@ static int msm_mclk_event(struct snd_soc_dapm_widget *w,
 		if (!clk_users) {
 			pr_debug("%s: disabling MCLK. clk_users = %d\n",
 					__func__, clk_users);
-
-			clk_disable(codec_clk);
+			clk_disable_unprepare(codec_clk);
 			tabla_mclk_enable(w->codec, 0, true);
+
 		}
 		break;
 	}
