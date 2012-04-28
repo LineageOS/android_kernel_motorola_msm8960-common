@@ -742,6 +742,7 @@ static int msm_hw_params(struct snd_pcm_substream *substream,
 	int ret = 0;
 	unsigned int rx_ch[SLIM_MAX_RX_PORTS], tx_ch[SLIM_MAX_TX_PORTS];
 	unsigned int rx_ch_cnt = 0, tx_ch_cnt = 0;
+	unsigned int user_set_tx_ch = 0;
 
 	pr_debug("%s: ch=%d\n", __func__,
 					msm_slim_0_rx_ch);
@@ -767,6 +768,22 @@ static int msm_hw_params(struct snd_pcm_substream *substream,
 			goto end;
 		}
 	} else {
+
+		if (codec_dai->id  == 2)
+			user_set_tx_ch =  msm_slim_0_tx_ch;
+		else if (codec_dai->id  == 4)
+			user_set_tx_ch =  params_channels(params);
+		else if (codec_dai->id == 5) {
+			/* DAI 5 is used for external EC reference from codec.
+			 * Since Rx is fed as reference for EC, the config of
+			 * this DAI is based on that of the Rx path.
+			 */
+			user_set_tx_ch =  msm_slim_0_rx_ch;
+		}
+
+		pr_debug("%s: %s_tx_dai_id_%d_ch=%d\n", __func__,
+			codec_dai->name, codec_dai->id, user_set_tx_ch);
+
 		ret = snd_soc_dai_get_channel_map(codec_dai,
 				&tx_ch_cnt, tx_ch, &rx_ch_cnt , rx_ch);
 		if (ret < 0) {
@@ -1411,7 +1428,7 @@ static struct snd_soc_dai_link msm_dai[] = {
 		.codec_name = "tabla_codec",
 		.codec_dai_name = "tabla_rx2",
 		.no_pcm = 1,
-		/* .be_id = do not care */
+		.be_id = MSM_BACKEND_DAI_EXTPROC_RX,
 		.be_hw_params_fixup = msm_slim_0_rx_be_hw_params_fixup,
 		.init = &msm_stubrx_init,
 		.ops = &msm_be_ops,
@@ -1424,7 +1441,7 @@ static struct snd_soc_dai_link msm_dai[] = {
 		.codec_name = "tabla_codec",
 		.codec_dai_name = "tabla_tx1",
 		.no_pcm = 1,
-		/* .be_id = do not care */
+		.be_id = MSM_BACKEND_DAI_EXTPROC_TX,
 		.be_hw_params_fixup = msm_slim_0_tx_be_hw_params_fixup,
 		.ops = &msm_be_ops,
 	},
@@ -1482,6 +1499,22 @@ static struct snd_soc_dai_link msm_dai[] = {
 		.be_hw_params_fixup = msm_be_hw_params_fixup,
 		.init = &msm_incall_rec_init,
 		.ops = &msm_slimbus_4_be_ops,
+	},
+	{
+		.name = LPASS_BE_STUB_1_TX,
+		.stream_name = "Stub1 Capture",
+		.cpu_dai_name = "msm-dai-stub",
+		.platform_name = "msm-pcm-routing",
+		.codec_name     = "tabla_codec",
+		.codec_dai_name	= "tabla_tx3",
+		.no_pcm = 1,
+		.be_id = MSM_BACKEND_DAI_EXTPROC_EC_TX,
+		/* This BE is used for external EC reference from codec. Since
+		 * Rx is fed as reference for EC, the config of this DAI is
+		 * based on that of the Rx path.
+		 */
+		.be_hw_params_fixup = msm_slim_0_rx_be_hw_params_fixup,
+		.ops = &msm_be_ops,
 	},
 };
 
