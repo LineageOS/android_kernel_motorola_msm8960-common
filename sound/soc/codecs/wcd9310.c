@@ -3783,6 +3783,10 @@ static int tabla_volatile(struct snd_soc_codec *ssc, unsigned int reg)
 	    reg == TABLA_A_CDC_COMP2_SHUT_DOWN_STATUS)
 		return 1;
 
+	/* HPH status registers */
+	if (reg == TABLA_A_RX_HPH_L_STATUS || reg == TABLA_A_RX_HPH_R_STATUS)
+		return 1;
+
 	return 0;
 }
 
