@@ -2567,6 +2567,7 @@ static struct platform_device *mmi_devices[] __initdata = {
 	&msm_pcm_routing,
 	&msm_cpudai0,
 	&msm_cpudai1,
+	&msm8960_cpudai_slimbus_2_rx,
 	&msm8960_cpudai_slimbus_2_tx,
 	&msm_cpudai_hdmi_rx,
 	&msm_cpudai_bt_rx,
