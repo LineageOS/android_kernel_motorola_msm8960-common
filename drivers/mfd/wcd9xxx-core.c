@@ -532,10 +532,10 @@ err:
 	return ret;
 }
 
-static void wcd9xxx_disable_supplies(struct wcd9xxx *wcd9xxx)
+static void wcd9xxx_disable_supplies(struct wcd9xxx *wcd9xxx,
+				     struct wcd9xxx_pdata *pdata)
 {
 	int i;
-	struct wcd9xxx_pdata *pdata = wcd9xxx->slim->dev.platform_data;
 
 	regulator_bulk_disable(ARRAY_SIZE(pdata->regulator),
 				    wcd9xxx->supplies);
@@ -744,7 +744,7 @@ static int __devinit wcd9xxx_i2c_probe(struct i2c_client *client,
 err_device_init:
 	wcd9xxx_free_reset(wcd9xxx);
 err_supplies:
-	wcd9xxx_disable_supplies(wcd9xxx);
+	wcd9xxx_disable_supplies(wcd9xxx, pdata);
 err_codec:
 	kfree(wcd9xxx);
 fail:
@@ -754,10 +754,10 @@ fail:
 static int __devexit wcd9xxx_i2c_remove(struct i2c_client *client)
 {
 	struct wcd9xxx *wcd9xxx;
-
+	struct wcd9xxx_pdata *pdata = client->dev.platform_data;
 	pr_debug("exit\n");
 	wcd9xxx = dev_get_drvdata(&client->dev);
-	wcd9xxx_disable_supplies(wcd9xxx);
+	wcd9xxx_disable_supplies(wcd9xxx, pdata);
 	wcd9xxx_device_exit(wcd9xxx);
 	return 0;
 }
@@ -892,7 +892,7 @@ err_slim_add:
 err_reset:
 	wcd9xxx_free_reset(wcd9xxx);
 err_supplies:
-	wcd9xxx_disable_supplies(wcd9xxx);
+	wcd9xxx_disable_supplies(wcd9xxx, pdata);
 err_codec:
 	kfree(wcd9xxx);
 err:
@@ -901,6 +901,7 @@ err:
 static int wcd9xxx_slim_remove(struct slim_device *pdev)
 {
 	struct wcd9xxx *wcd9xxx;
+	struct wcd9xxx_pdata *pdata = pdev->dev.platform_data;
 
 #ifdef CONFIG_DEBUG_FS
 	debugfs_remove(debugfs_peek);
@@ -910,7 +911,7 @@ static int wcd9xxx_slim_remove(struct slim_device *pdev)
 	wcd9xxx = slim_get_devicedata(pdev);
 	wcd9xxx_deinit_slimslave(wcd9xxx);
 	slim_remove_device(wcd9xxx->slim_slave);
-	wcd9xxx_disable_supplies(wcd9xxx);
+	wcd9xxx_disable_supplies(wcd9xxx, pdata);
 	wcd9xxx_device_exit(wcd9xxx);
 	return 0;
 }
