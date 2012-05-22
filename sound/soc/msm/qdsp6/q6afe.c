@@ -151,6 +151,7 @@ int afe_get_port_type(u16 port_id)
 	case HDMI_RX:
 	case SLIMBUS_0_RX:
 	case SLIMBUS_1_RX:
+	case SLIMBUS_2_RX:
 	case SLIMBUS_3_RX:
 	case INT_BT_SCO_RX:
 	case INT_BT_A2DP_RX:
@@ -214,6 +215,7 @@ int afe_validate_port(u16 port_id)
 	case SLIMBUS_0_TX:
 	case SLIMBUS_1_RX:
 	case SLIMBUS_1_TX:
+	case SLIMBUS_2_RX:
 	case SLIMBUS_2_TX:
 	case SLIMBUS_3_RX:
 	case SLIMBUS_3_TX:
@@ -283,6 +285,7 @@ int afe_get_port_index(u16 port_id)
 	case SLIMBUS_0_TX: return IDX_SLIMBUS_0_TX;
 	case SLIMBUS_1_RX: return IDX_SLIMBUS_1_RX;
 	case SLIMBUS_1_TX: return IDX_SLIMBUS_1_TX;
+	case SLIMBUS_2_RX: return IDX_SLIMBUS_2_RX;
 	case SLIMBUS_2_TX: return IDX_SLIMBUS_2_TX;
 	case SLIMBUS_3_RX: return IDX_SLIMBUS_3_RX;
 	case SLIMBUS_3_TX: return IDX_SLIMBUS_3_TX;
@@ -319,6 +322,7 @@ int afe_sizeof_cfg_cmd(u16 port_id)
 	case SLIMBUS_0_TX:
 	case SLIMBUS_1_RX:
 	case SLIMBUS_1_TX:
+	case SLIMBUS_2_RX:
 	case SLIMBUS_2_TX:
 	case SLIMBUS_3_RX:
 	case SLIMBUS_3_TX:
