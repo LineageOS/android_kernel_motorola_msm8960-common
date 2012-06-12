@@ -1138,6 +1138,13 @@ struct asm_stream_cmd_open_read_v2_1 {
 #define ASM_ENCDEC_IMMDIATE_DECODE 0x00010C14
 #define ASM_ENCDEC_CFG_BLK         0x00010C2C
 
+#define ASM_STREAM_CMD_OPEN_READ_COMPRESSED               0x00010D95
+struct asm_stream_cmd_open_read_compressed {
+	struct apr_hdr hdr;
+	u32            uMode;
+	u32            frame_per_buf;
+} __packed;
+
 #define ASM_STREAM_CMD_OPEN_WRITE                        0x00010BCA
 #define ASM_STREAM_CMD_OPEN_WRITE_V2_1                   0x00010DB1
 struct asm_stream_cmd_open_write {
@@ -1177,6 +1184,17 @@ struct adm_cmd_connect_afe_port {
 	u8	mode; /*mode represent the interface is for RX or TX*/
 	u8	session_id; /*ASM session ID*/
 	u16	afe_port_id;
+} __packed;
+
+#define ADM_CMD_CONNECT_AFE_PORT_V2 0x00010332
+
+struct adm_cmd_connect_afe_port_v2 {
+	struct apr_hdr     hdr;
+	u8	mode; /*mode represent the interface is for RX or TX*/
+	u8	session_id; /*ASM session ID*/
+	u16	afe_port_id;
+	u32	num_channels;
+	u32	sampleing_rate;
 } __packed;
 
 #define ASM_STREAM_CMD_SET_ENCDEC_PARAM                  0x00010C10
