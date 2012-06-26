@@ -18,6 +18,7 @@
 #include <linux/printk.h>
 #include <linux/ratelimit.h>
 #include <linux/debugfs.h>
+#include <linux/wait.h>
 #include <linux/mfd/wcd9xxx/core.h>
 #include <linux/mfd/wcd9xxx/wcd9xxx_registers.h>
 #include <linux/mfd/wcd9xxx/wcd9310_registers.h>
@@ -50,6 +51,8 @@ MODULE_PARM_DESC(cfilt_adjust_ms, "delay after adjusting cfilt voltage in ms");
 #define MBHC_FW_READ_ATTEMPTS 15
 #define MBHC_FW_READ_TIMEOUT 2000000
 
+#define SLIM_CLOSE_TIMEOUT 1000
+
 enum {
 	MBHC_USE_HPHL_TRIGGER = 1,
 	MBHC_USE_MB_TRIGGER = 2
@@ -76,6 +79,8 @@ struct tabla_codec_dai_data {
 	u32 *ch_num;
 	u32 ch_act;
 	u32 ch_tot;
+	u32 ch_mask;
+	wait_queue_head_t dai_wait;
 };
 
 #define TABLA_MCLK_RATE_12288KHZ 12288000
@@ -3585,6 +3590,41 @@ static struct snd_soc_dai_driver tabla_i2s_dai[] = {
 	},
 };
 
+static int tabla_codec_enable_chmask(struct tabla_priv *tabla_p,
+	int event, int index)
+{
+	int  ret = 0;
+	u32 k = 0;
+	switch (event) {
+	case SND_SOC_DAPM_POST_PMU:
+		for (k = 0; k < tabla_p->dai[index].ch_tot; k++) {
+			ret = wcd9xxx_get_slave_port(
+					tabla_p->dai[index].ch_num[k]);
+			if (ret < 0) {
+				pr_err("%s: Invalid slave port ID: %d\n",
+					__func__, ret);
+				ret = -EINVAL;
+				break;
+			}
+			tabla_p->dai[index].ch_mask |= 1 << ret;
+		}
+		ret = 0;
+		break;
+	case SND_SOC_DAPM_POST_PMD:
+		ret = wait_event_timeout(tabla_p->dai[index].dai_wait,
+					(tabla_p->dai[index].ch_mask == 0),
+				msecs_to_jiffies(SLIM_CLOSE_TIMEOUT));
+		if (!ret) {
+			pr_err("%s: Slim close tx/rx wait timeout\n",
+				__func__);
+			ret = -EINVAL;
+		}
+		ret = 0;
+		break;
+	}
+	return ret;
+}
+
 static int tabla_codec_enable_slimrx(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
@@ -3609,11 +3649,15 @@ static int tabla_codec_enable_slimrx(struct snd_soc_dapm_widget *w,
 				break;
 			}
 		}
-		if (tabla_p->dai[j].ch_act == tabla_p->dai[j].ch_tot)
+		if (tabla_p->dai[j].ch_act == tabla_p->dai[j].ch_tot) {
+			ret = tabla_codec_enable_chmask(tabla_p,
+							SND_SOC_DAPM_POST_PMU,
+							j);
 			ret = wcd9xxx_cfg_slim_sch_rx(tabla,
 					tabla_p->dai[j].ch_num,
 					tabla_p->dai[j].ch_tot,
 					tabla_p->dai[j].rate);
+		}
 		break;
 	case SND_SOC_DAPM_POST_PMD:
 		for (j = 0; j < ARRAY_SIZE(tabla_dai); j++) {
@@ -3629,11 +3673,13 @@ static int tabla_codec_enable_slimrx(struct snd_soc_dapm_widget *w,
 			ret = wcd9xxx_close_slim_sch_rx(tabla,
 						tabla_p->dai[j].ch_num,
 						tabla_p->dai[j].ch_tot);
-			usleep_range(5000, 5000);
 			tabla_p->dai[j].rate = 0;
 			memset(tabla_p->dai[j].ch_num, 0, (sizeof(u32)*
 					tabla_p->dai[j].ch_tot));
 			tabla_p->dai[j].ch_tot = 0;
+			ret = tabla_codec_enable_chmask(tabla_p,
+							SND_SOC_DAPM_POST_PMD,
+							j);
 		}
 	}
 	return ret;
@@ -3667,11 +3713,15 @@ static int tabla_codec_enable_slimtx(struct snd_soc_dapm_widget *w,
 				break;
 			}
 		}
-		if (tabla_p->dai[j].ch_act == tabla_p->dai[j].ch_tot)
+		if (tabla_p->dai[j].ch_act == tabla_p->dai[j].ch_tot) {
+			ret = tabla_codec_enable_chmask(tabla_p,
+							SND_SOC_DAPM_POST_PMU,
+							j);
 			ret = wcd9xxx_cfg_slim_sch_tx(tabla,
 						tabla_p->dai[j].ch_num,
 						tabla_p->dai[j].ch_tot,
 						tabla_p->dai[j].rate);
+		}
 		break;
 	case SND_SOC_DAPM_POST_PMD:
 		for (j = 0; j < ARRAY_SIZE(tabla_dai); j++) {
@@ -3692,6 +3742,9 @@ static int tabla_codec_enable_slimtx(struct snd_soc_dapm_widget *w,
 			memset(tabla_p->dai[j].ch_num, 0, (sizeof(u32)*
 					tabla_p->dai[j].ch_tot));
 			tabla_p->dai[j].ch_tot = 0;
+			ret = tabla_codec_enable_chmask(tabla_p,
+							SND_SOC_DAPM_POST_PMD,
+							j);
 		}
 	}
 	return ret;
@@ -6196,7 +6249,8 @@ static irqreturn_t tabla_slimbus_irq(int irq, void *data)
 {
 	struct tabla_priv *priv = data;
 	struct snd_soc_codec *codec = priv->codec;
-	int i, j;
+	struct tabla_priv *tabla_p = snd_soc_codec_get_drvdata(codec);
+	int i, j, port_id, k, ch_mask_temp;
 	u8 val;
 
 	for (i = 0; i < WCD9XXX_SLIM_NUM_PORT_REG; i++) {
@@ -6211,6 +6265,22 @@ static irqreturn_t tabla_slimbus_irq(int irq, void *data)
 			if (val & 0x2)
 				pr_err_ratelimited("underflow error on port %x,"
 					" value %x\n", i*8 + j, val);
+			if (val & 0x4) {
+				pr_debug("%s: port %x disconnect value %x\n",
+					__func__, i*8 + j, val);
+				port_id = i*8 + j;
+				for (k = 0; k < ARRAY_SIZE(tabla_dai); k++) {
+					ch_mask_temp = 1 << port_id;
+					if (ch_mask_temp &
+						tabla_p->dai[k].ch_mask) {
+						tabla_p->dai[k].ch_mask &=
+								~ch_mask_temp;
+					if (!tabla_p->dai[k].ch_mask)
+							wake_up(
+						&tabla_p->dai[k].dai_wait);
+					}
+				}
+			}
 		}
 		wcd9xxx_interface_reg_write(codec->control_data,
 			TABLA_SLIM_PGD_PORT_INT_CLR0 + i, 0xFF);
@@ -6831,6 +6901,7 @@ static int tabla_codec_probe(struct snd_soc_codec *codec)
 		}
 		tabla->dai[i].ch_num = kzalloc((sizeof(unsigned int)*
 					ch_cnt), GFP_KERNEL);
+		init_waitqueue_head(&tabla->dai[i].dai_wait);
 	}
 
 #ifdef CONFIG_DEBUG_FS
