@@ -161,6 +161,7 @@ struct audio_client {
 	void			*priv;
 	uint32_t         io_mode;
 	uint64_t         time_stamp;
+	atomic_t         cmd_response;
 	bool             perf_mode;
 };
 
