@@ -181,8 +181,8 @@ struct kgsl_mem_entry {
 
 void kgsl_mem_entry_destroy(struct kref *kref);
 
-struct kgsl_mem_entry *kgsl_get_mem_entry(unsigned int ptbase,
-		unsigned int gpuaddr, unsigned int size);
+struct kgsl_mem_entry *kgsl_get_mem_entry(struct kgsl_device *device,
+		unsigned int ptbase, unsigned int gpuaddr, unsigned int size);
 
 struct kgsl_mem_entry *kgsl_sharedmem_find_region(
 	struct kgsl_process_private *private, unsigned int gpuaddr,
