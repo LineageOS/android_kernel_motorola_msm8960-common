@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2011, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -645,15 +645,17 @@ u32 send_rtac_asm_apr(void *buf, u32 opcode)
 			__func__);
 		goto done;
 	}
-	if (session_id > SESSION_MAX) {
+	if (session_id > (SESSION_MAX + 1)) {
 		pr_err("%s: Invalid Session = %d\n", __func__, session_id);
 		goto done;
 	}
 
 	mutex_lock(&rtac_asm_apr_mutex);
-	if (rtac_asm_apr_data[session_id].apr_handle == NULL) {
-		pr_err("%s: APR not initialized\n", __func__);
-		goto err;
+	if (session_id < SESSION_MAX+1) {
+		if (rtac_asm_apr_data[session_id].apr_handle == NULL) {
+			pr_err("%s: APR not initialized\n", __func__);
+			goto err;
+		}
 	}
 
 	/* Set globals for copy of returned payload */
@@ -682,7 +684,8 @@ u32 send_rtac_asm_apr(void *buf, u32 opcode)
 	asm_params.opcode = opcode;
 
 	memcpy(rtac_asm_buffer, &asm_params, sizeof(asm_params));
-	atomic_set(&rtac_asm_apr_data[session_id].cmd_state, 1);
+	if (session_id < SESSION_MAX+1)
+		atomic_set(&rtac_asm_apr_data[session_id].cmd_state, 1);
 
 	pr_debug("%s: Sending RTAC command size = %d, session_id=%d\n",
 		__func__, asm_params.pkt_size, session_id);
@@ -791,7 +794,8 @@ u32 send_voice_apr(u32 mode, void *buf, u32 opcode)
 		goto done;
 	}
 
-	if (copy_from_user(&payload_size, buf + sizeof(u32), sizeof(u32))) {
+	if (copy_from_user(&payload_size, buf + sizeof(payload_size),
+						sizeof(payload_size))) {
 		pr_err("%s: Could not copy payload size from user buffer\n",
 			__func__);
 		goto done;
@@ -803,7 +807,8 @@ u32 send_voice_apr(u32 mode, void *buf, u32 opcode)
 		goto done;
 	}
 
-	if (copy_from_user(&dest_port, buf + 2 * sizeof(u32), sizeof(u32))) {
+	if (copy_from_user(&dest_port, buf + 2 * sizeof(dest_port),
+						sizeof(dest_port))) {
 		pr_err("%s: Could not copy port id from user buffer\n",
 			__func__);
 		goto done;
