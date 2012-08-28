@@ -359,9 +359,11 @@ static void msm_gpio_irq_unmask(struct irq_data *d)
 
 	spin_lock_irqsave(&tlmm_lock, irq_flags);
 	__set_bit(gpio, msm_gpio.enabled_irqs);
-	__raw_writel(BIT(INTR_STATUS_BIT), GPIO_INTR_STATUS(gpio));
-	__msm_gpio_irq_unmask(gpio);
-	mb();
+	if (!(__raw_readl(GPIO_INTR_CFG(gpio)) & INTR_ENABLE)) {
+		__raw_writel(BIT(INTR_STATUS_BIT), GPIO_INTR_STATUS(gpio));
+		__msm_gpio_irq_unmask(gpio);
+		mb();
+	}
 	spin_unlock_irqrestore(&tlmm_lock, irq_flags);
 
 	if (msm_gpio_irq_extn.irq_mask)
