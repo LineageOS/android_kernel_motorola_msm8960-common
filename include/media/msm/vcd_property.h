@@ -55,6 +55,7 @@
 #define VCD_I_SLICE_DELIVERY_MODE (VCD_START_BASE + 0x27)
 #define VCD_I_VOP_TIMING_CONSTANT_DELTA (VCD_START_BASE + 0x28)
 #define VCD_I_SET_TURBO_CLK (VCD_START_BASE + 0x29)
+#define VCD_I_ENABLE_DELIMITER_FLAG (VCD_START_BASE + 0x2A)
 #define VCD_I_SET_EXT_METABUFFER (VCD_START_BASE + 0x2C)
 #define VCD_I_FREE_EXT_METABUFFER (VCD_START_BASE + 0x2D)
 #define VCD_I_ENABLE_SEC_METADATA (VCD_START_BASE + 0x2E)
@@ -379,6 +380,9 @@ struct vcd_property_sps_pps_for_idr_enable {
 	u32 sps_pps_for_idr_enable_flag;
 };
 
+struct vcd_property_avc_delimiter_enable {
+	u32 avc_delimiter_enable_flag;
+};
 struct vcd_property_meta_buffer {
 	u8 *kernel_virtual_addr;
 	u8 *physical_addr;
