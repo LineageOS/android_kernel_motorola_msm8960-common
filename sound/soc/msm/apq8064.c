@@ -1311,6 +1311,28 @@ static int msm_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 	return 0;
 }
 
+#ifdef CONFIG_SND_SOC_MSM_QDSP6_HDMI_AUDIO
+static int msm_hdmi_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
+					struct snd_pcm_hw_params *params)
+{
+	struct snd_interval *rate = hw_param_interval(params,
+					SNDRV_PCM_HW_PARAM_RATE);
+
+	struct snd_interval *channels = hw_param_interval(params,
+					SNDRV_PCM_HW_PARAM_CHANNELS);
+
+	pr_debug("%s channels->min %u channels->max %u ()\n", __func__,
+			channels->min, channels->max);
+
+	if (channels->max < 2)
+		channels->min = channels->max = 2;
+	rate->min = rate->max = 48000;
+	channels->min = channels->max = msm_hdmi_rx_ch;
+
+	return 0;
+}
+#endif
+
 static int msm_btsco_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 					struct snd_pcm_hw_params *params)
 {
