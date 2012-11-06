@@ -86,7 +86,7 @@ static int msm8960_mic_on;
 
 static int msm8960_btsco_rate = SAMPLE_RATE_8KHZ;
 static int msm8960_btsco_ch = 1;
-
+static int hdmi_rate_variable;
 static int msm8960_auxpcm_rate = SAMPLE_RATE_8KHZ;
 
 static struct clk *codec_clk;
@@ -583,11 +583,13 @@ static const struct snd_soc_dapm_route common_audio_map_version2[] = {
 static const char *spk_function[] = {"Off", "On"};
 static const char *slim0_rx_ch_text[] = {"One", "Two"};
 static const char *slim0_tx_ch_text[] = {"One", "Two", "Three", "Four"};
+static const char * const hdmi_rate[] = {"Default", "Variable"};
 
 static const struct soc_enum msm8960_enum[] = {
 	SOC_ENUM_SINGLE_EXT(2, spk_function),
 	SOC_ENUM_SINGLE_EXT(2, slim0_rx_ch_text),
 	SOC_ENUM_SINGLE_EXT(4, slim0_tx_ch_text),
+	SOC_ENUM_SINGLE_EXT(2, hdmi_rate),
 };
 
 static const char *btsco_rate_text[] = {"8000", "16000"};
@@ -694,6 +696,21 @@ static int msm8960_auxpcm_rate_put(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
+static int msm8960_hdmi_rate_put(struct snd_kcontrol *kcontrol,
+				struct snd_ctl_elem_value *ucontrol)
+{
+	hdmi_rate_variable = ucontrol->value.integer.value[0];
+	pr_debug("%s: hdmi_rate_variable = %d\n", __func__, hdmi_rate_variable);
+	return 0;
+}
+
+static int msm8960_hdmi_rate_get(struct snd_kcontrol *kcontrol,
+				struct snd_ctl_elem_value *ucontrol)
+{
+	ucontrol->value.integer.value[0] = hdmi_rate_variable;
+	return 0;
+}
+
 static const struct snd_kcontrol_new tabla_msm8960_controls[] = {
 	SOC_ENUM_EXT("Speaker Function", msm8960_enum[0], msm8960_get_spk,
 		msm8960_set_spk),
@@ -711,6 +728,9 @@ static const struct snd_kcontrol_new int_btsco_rate_mixer_controls[] = {
 static const struct snd_kcontrol_new auxpcm_rate_mixer_controls[] = {
 	SOC_ENUM_EXT("AUX PCM SampleRate", msm8960_auxpcm_enum[0],
 		msm8960_auxpcm_rate_get, msm8960_auxpcm_rate_put),
+	SOC_ENUM_EXT("HDMI RX Rate", msm8960_enum[3],
+					msm8960_hdmi_rate_get,
+					msm8960_hdmi_rate_put),
 };
 
 static int msm8960_btsco_init(struct snd_soc_pcm_runtime *rtd)
@@ -1134,7 +1154,8 @@ static int msm8960_hdmi_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 
 	if (channels->max < 2)
 		channels->min = channels->max = 2;
-	rate->min = rate->max = 48000;
+	if (!hdmi_rate_variable)
+		rate->min = rate->max = 48000;
 
 	return 0;
 }
