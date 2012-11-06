@@ -535,6 +535,8 @@ adreno_ringbuffer_addcmds(struct adreno_ringbuffer *rb,
 	total_sizedwords += flags & KGSL_CMD_FLAGS_PMODE ? 4 : 0;
 	/* 2 dwords to store the start of command sequence */
 	total_sizedwords += 2;
+	/* CP_WAIT_FOR_IDLE */
+	total_sizedwords += 2;
 
 	/* Add CP_COND_EXEC commands to generate CP_INTERRUPT */
 	total_sizedwords += context ? 13 : 0;
@@ -698,6 +700,13 @@ adreno_ringbuffer_addcmds(struct adreno_ringbuffer *rb,
 			(0x4<<16)|(A3XX_HLSQ_CL_KERNEL_GROUP_X_REG - 0x2000));
 		GSL_RB_WRITE(ringcmds, rcmd_gpu, 0);
 	}
+
+	/* HW Workaround for MMU Page fault
+	 * due to memory getting free early before
+	 * GPU completes it.
+	 */
+	GSL_RB_WRITE(ringcmds, rcmd_gpu, cp_type3_packet(CP_WAIT_FOR_IDLE, 1));
+	GSL_RB_WRITE(ringcmds, rcmd_gpu, 0x00);
 
 	adreno_ringbuffer_submit(rb);
 
