@@ -894,6 +894,8 @@ void __mdp_histogram_kickoff(struct mdp_hist_mgmt *mgmt);
 void __mdp_histogram_reset(struct mdp_hist_mgmt *mgmt);
 unsigned int mdp_check_suspended(void);
 void mdp_footswitch_ctrl(boolean on);
+int mdp_enable_iommu_clocks(void);
+int mdp_disable_iommu_clocks(void);
 
 static inline void mdp_hang_panic(void) {
 	print_hex_dump(KERN_ERR, "MDP_HANG:", DUMP_PREFIX_OFFSET, 32, 4,
