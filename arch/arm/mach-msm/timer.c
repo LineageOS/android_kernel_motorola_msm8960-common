@@ -23,6 +23,7 @@
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/percpu.h>
+#include <linux/syscore_ops.h>
 #include <linux/mm.h>
 
 #include <asm/mach/time.h>
@@ -85,6 +86,8 @@ static int msm_global_timer;
 static struct timespec persistent_ts;
 static u64 persistent_ns;
 static u64 last_persistent_ns;
+static struct timespec suspend_ts;
+static u64 cyc_offset;
 
 #define NR_TIMERS ARRAY_SIZE(msm_clocks)
 
@@ -949,7 +952,7 @@ unsigned long long notrace sched_clock(void)
 {
 	struct msm_clock *clock = &msm_clocks[msm_global_timer];
 	struct clocksource *cs = &clock->clocksource;
-	u64 cyc = cs->read(cs);
+	u64 cyc = cs->read(cs) + cyc_offset;
 	u64 last_ns_local;
 	last_ns_local = cyc_to_sched_clock(&cd, cyc, ((u32)~0 >> clock->shift));
 	atomic64_set(&last_ns, last_ns_local);
@@ -960,7 +963,7 @@ static void notrace msm_update_sched_clock(void)
 {
 	struct msm_clock *clock = &msm_clocks[msm_global_timer];
 	struct clocksource *cs = &clock->clocksource;
-	u32 cyc = cs->read(cs);
+	u32 cyc = cs->read(cs) + cyc_offset;
 	update_sched_clock(&cd, cyc, ((u32)~0) >> clock->shift);
 }
 
@@ -996,6 +999,30 @@ void read_persistent_clock(struct timespec *ts)
 	timespec_add_ns(tsp, delta);
 	*ts = *tsp;
 }
+
+static int msm_timer_suspend(void)
+{
+	read_persistent_clock(&suspend_ts);
+	return 0;
+}
+
+static void msm_timer_resume(void)
+{
+	struct timespec ts;
+	struct msm_clock *clock = &msm_clocks[msm_global_timer];
+	int div = NSEC_PER_SEC / clock->freq;
+
+	read_persistent_clock(&ts);
+	if (timespec_compare(&ts, &suspend_ts) > 0) {
+		ts = timespec_sub(ts, suspend_ts);
+		cyc_offset += (clock->freq * ts.tv_sec) + (ts.tv_nsec / div);
+	}
+}
+
+static struct syscore_ops msm_timer_syscore_ops = {
+	.suspend = msm_timer_suspend,
+	.resume = msm_timer_resume,
+};
 
 static void __init msm_timer_init(void)
 {
@@ -1155,6 +1182,8 @@ static void __init msm_timer_init(void)
 			msm_clocks[MSM_CLOCK_DGT].regbase + TIMER_ENABLE);
 		set_delay_fn(read_current_timer_delay_loop);
 	}
+
+	register_syscore_ops(&msm_timer_syscore_ops);
 }
 
 #ifdef CONFIG_SMP
