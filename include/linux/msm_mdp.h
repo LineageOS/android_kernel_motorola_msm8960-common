@@ -76,6 +76,8 @@
 #define MSMFB_BUFFER_SYNC  _IOW(MSMFB_IOCTL_MAGIC, 165, struct mdp_buf_sync)
 #define MSMFB_DISPLAY_COMMIT      _IOW(MSMFB_IOCTL_MAGIC, 164, \
 						struct mdp_display_commit)
+#define MSMFB_WRITEBACK_SET_MIRRORING_HINT _IOW(MSMFB_IOCTL_MAGIC, 165, \
+						unsigned int)
 #define MSMFB_METADATA_GET  _IOW(MSMFB_IOCTL_MAGIC, 166, struct msmfb_metadata)
 
 #define MSMFB_METADATA_SET  _IOW(MSMFB_IOCTL_MAGIC, 163, struct msmfb_metadata)
@@ -582,6 +584,13 @@ struct msmfb_reg_access {
 enum {
 	DISPLAY_SUBSYSTEM_ID,
 	ROTATOR_SUBSYSTEM_ID,
+};
+
+enum {
+	MDP_WRITEBACK_MIRROR_OFF,
+	MDP_WRITEBACK_MIRROR_ON,
+	MDP_WRITEBACK_MIRROR_PAUSE,
+	MDP_WRITEBACK_MIRROR_RESUME,
 };
 
 #ifdef __KERNEL__
