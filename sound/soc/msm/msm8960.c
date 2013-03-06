@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2011-2013 The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -1421,15 +1421,15 @@ static struct snd_soc_dai_link msm8960_dai_common[] = {
 		.ignore_suspend = 1,
 	},
 	{
-		.name = "SGLTE",
-		.stream_name = "SGLTE",
-		.cpu_dai_name   = "SGLTE",
+		.name = "Voice2",
+		.stream_name = "Voice2",
+		.cpu_dai_name   = "Voice2",
 		.platform_name  = "msm-pcm-voice",
 		.dynamic = 1,
 		.dsp_link = &fe_media,
-		.be_id = MSM_FRONTEND_DAI_SGLTE,
 		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
 		.ignore_suspend = 1,
+		.be_id = MSM_FRONTEND_DAI_VOICE2,
 	},
 	{
 		.name = "MSM8960 LowLatency",
