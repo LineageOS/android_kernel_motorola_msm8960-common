@@ -174,6 +174,7 @@ config ARCH_MSM8960
 	select ARM_USE_USER_ACCESSIBLE_TIMERS
 	select MSM_USE_USER_ACCESSIBLE_TIMERS
 	select MSM_CPU_PWRCTL
+	select HAS_MACH_MEMUTILS
 
 config ARCH_MSM8930
 	bool "MSM8930"
@@ -2295,5 +2296,11 @@ config CPU_OVERCLOCK
 	default n
 	help
 		Processor overclocking up to 2 GHz for fast bin or 1.9 GHz for nom
+
+config HAS_MACH_MEMUTILS
+	default n
+	bool "Motorola MSM memcpy enhancements"
+	help
+		Faster memcpy performance for Krait
 
 endif

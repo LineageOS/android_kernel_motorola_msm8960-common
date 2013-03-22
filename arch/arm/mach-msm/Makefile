@@ -349,3 +349,5 @@ obj-$(CONFIG_HOB_SHARED_RAM_MMI) += mmi_hob_ram_mmap.o
 
 obj-$(CONFIG_MSM_USE_USER_ACCESSIBLE_TIMERS) += timer_page.o
 obj-$(CONFIG_MSM_CPU_PWRCTL) +=  msm_cpu_pwrctl.o
+
+obj-$(CONFIG_HAS_MACH_MEMUTILS) += memutils/
