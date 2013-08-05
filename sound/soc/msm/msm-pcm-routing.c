@@ -2256,6 +2256,11 @@ static const struct snd_soc_dapm_widget msm_qdsp6_widgets[] = {
 	ARRAY_SIZE(sbus_3_rx_port_mixer_controls)),
 	SND_SOC_DAPM_MIXER("MI2S_RX Port Mixer", SND_SOC_NOPM, 0, 0,
 	mi2s_rx_port_mixer_controls, ARRAY_SIZE(mi2s_rx_port_mixer_controls)),
+
+	/* Virtual Pins to force backends ON atm */
+	SND_SOC_DAPM_OUTPUT("BE_OUT"),
+	SND_SOC_DAPM_INPUT("BE_IN"),
+
 };
 
 static const struct snd_soc_dapm_route intercon[] = {
@@ -2496,6 +2501,23 @@ static const struct snd_soc_dapm_route intercon[] = {
 
 	{"MI2S_RX Port Mixer", "SLIM_1_TX", "SLIMBUS_1_TX"},
 	{"MI2S_RX", NULL, "MI2S_RX Port Mixer"},
+	/* Backend Enablement */
+
+	{"BE_OUT", NULL, "PRI_I2S_RX"},
+	{"BE_OUT", NULL, "SEC_I2S_RX"},
+	{"BE_OUT", NULL, "SLIMBUS_0_RX"},
+	{"BE_OUT", NULL, "HDMI"},
+	{"BE_OUT", NULL, "MI2S_RX"},
+	{"PRI_I2S_TX", NULL, "BE_IN"},
+	{"MI2S_TX", NULL, "BE_IN"},
+	{"SLIMBUS_0_TX", NULL, "BE_IN" },
+	{"BE_OUT", NULL, "INT_BT_SCO_RX"},
+	{"INT_BT_SCO_TX", NULL, "BE_IN"},
+	{"BE_OUT", NULL, "INT_FM_RX"},
+	{"INT_FM_TX", NULL, "BE_IN"},
+	{"BE_OUT", NULL, "PCM_RX"},
+	{"PCM_TX", NULL, "BE_IN"},
+	{"BE_OUT", NULL, "SLIMBUS_3_RX"},
 };
 
 static int msm_pcm_routing_hw_params(struct snd_pcm_substream *substream,
