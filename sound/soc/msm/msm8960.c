@@ -1313,14 +1313,10 @@ static struct snd_soc_dai_link msm8960_dai_common[] = {
 		.cpu_dai_name   = "SGLTE",
 		.platform_name  = "msm-pcm-voice",
 		.dynamic = 1,
-		.trigger = {SND_SOC_DPCM_TRIGGER_POST,
-					SND_SOC_DPCM_TRIGGER_POST},
+		.dsp_link = &fe_media,
+		.be_id = MSM_FRONTEND_DAI_SGLTE,
 		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
 		.ignore_suspend = 1,
-		.ignore_pmdown_time = 1,/* this dainlink has playback support */
-		.codec_dai_name = "snd-soc-dummy-dai",
-		.codec_name = "snd-soc-dummy",
-		.be_id = MSM_FRONTEND_DAI_SGLTE,
 	},
 	/* Backend BT/FM DAI Links */
 	{
