@@ -1563,11 +1563,9 @@ static struct snd_soc_dai_link msm_dai[] = {
 		.cpu_dai_name = "VOICE2_STUB",
 		.platform_name = "msm-pcm-hostless",
 		.dynamic = 1,
-		.trigger = {SND_SOC_DPCM_TRIGGER_POST,
-			    SND_SOC_DPCM_TRIGGER_POST},
+		.dsp_link = &fe_media,
 		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
 		.ignore_suspend = 1,
-		.ignore_pmdown_time = 1,
 		/* this dainlink has playback support */
 		.codec_dai_name = "snd-soc-dummy-dai",
 		.codec_name = "snd-soc-dummy",
