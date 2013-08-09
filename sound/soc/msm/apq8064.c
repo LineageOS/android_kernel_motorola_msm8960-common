@@ -89,6 +89,7 @@ static int msm_slim_3_rx_ch = 1;
 
 static int msm_btsco_rate = BTSCO_RATE_8KHZ;
 static int msm_btsco_ch = 1;
+static int msm_hdmi_rx_ch = 2;
 
 static int hdmi_rate_variable;
 static int rec_mode = INCALL_REC_MONO;
@@ -1780,7 +1781,7 @@ static struct snd_soc_dai_link msm_dai[] = {
 		.no_pcm = 1,
 		.no_codec = 1,
 		.be_id = MSM_BACKEND_DAI_HDMI_RX,
-		.be_hw_params_fixup = msm_be_hw_params_fixup,
+		.be_hw_params_fixup = msm_hdmi_be_hw_params_fixup,
 	},
 	/* Backend AFE DAI Links */
 	{
