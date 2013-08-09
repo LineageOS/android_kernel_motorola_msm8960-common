@@ -1351,7 +1351,8 @@ static struct snd_soc_dai_link msm8960_dai_common[] = {
 		.platform_name  = "msm-pcm-dsp",
 		.dynamic = 1,
 		.dsp_link = &fe_media,
-		.be_id = MSM_FRONTEND_DAI_MULTIMEDIA1
+		.be_id = MSM_FRONTEND_DAI_MULTIMEDIA1,
+		.ignore_suspend = 1,
 	},
 	{
 		.name = "MSM8960 Media2",
@@ -1361,6 +1362,7 @@ static struct snd_soc_dai_link msm8960_dai_common[] = {
 		.dynamic = 1,
 		.dsp_link = &fe_media,
 		.be_id = MSM_FRONTEND_DAI_MULTIMEDIA2,
+		.ignore_suspend = 1,
 	},
 	{
 		.name = "Circuit-Switch Voice",
@@ -1381,6 +1383,7 @@ static struct snd_soc_dai_link msm8960_dai_common[] = {
 		.dynamic = 1,
 		.dsp_link = &fe_media,
 		.be_id = MSM_FRONTEND_DAI_VOIP,
+		.ignore_suspend = 1,
 	},
 	{
 		.name = "MSM8960 LPA",
@@ -1390,6 +1393,7 @@ static struct snd_soc_dai_link msm8960_dai_common[] = {
 		.dynamic = 1,
 		.dsp_link = &lpa_fe_media,
 		.be_id = MSM_FRONTEND_DAI_MULTIMEDIA3,
+		.ignore_suspend = 1,
 	},
 	/* Hostless PMC purpose */
 	{
@@ -1440,6 +1444,7 @@ static struct snd_soc_dai_link msm8960_dai_common[] = {
 		.dynamic = 1,
 		.dsp_link = &lpa_fe_media,
 		.be_id = MSM_FRONTEND_DAI_MULTIMEDIA4,
+		.ignore_suspend = 1,
 	},
 	{
 		.name = "AUXPCM Hostless",
@@ -1493,6 +1498,7 @@ static struct snd_soc_dai_link msm8960_dai_common[] = {
 		.dynamic = 1,
 		.dsp_link = &fe_media,
 		.be_id = MSM_FRONTEND_DAI_MULTIMEDIA5,
+		.ignore_suspend = 1,
 	},
 	/* Backend BT/FM DAI Links */
 	{
