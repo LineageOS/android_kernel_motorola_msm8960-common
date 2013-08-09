@@ -343,7 +343,7 @@ static int msm_pcm_add_controls(struct snd_soc_pcm_runtime *rtd)
 	struct snd_kcontrol *kctl;
 	int ret = 0;
 
-	dev_dbg(rtd->dev, "%s, Volume cntrl add\n", __func__);
+	dev_dbg(rtd->platform->dev, "%s, Volume cntrl add\n", __func__);
 	ret = snd_pcm_add_volume_ctls(pcm, SNDRV_PCM_STREAM_PLAYBACK,
 					NULL, 1,
 					rtd->dai_link->be_id,
@@ -366,7 +366,7 @@ static int msm_asoc_pcm_new(struct snd_soc_pcm_runtime *rtd)
 
 	ret = msm_pcm_add_controls(rtd);
 	if (ret)
-		dev_err(rtd->dev, "%s, kctl add failed\n", __func__);
+		dev_err(rtd->platform->dev, "%s, kctl add failed\n", __func__);
 	return ret;
 }
 
