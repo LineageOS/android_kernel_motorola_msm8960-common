@@ -824,8 +824,6 @@ struct ion_flag_data {
  *
  * Clean the caches of the handle specified.
  */
-#define ION_IOC_CLEAN_CACHES_OLD	_IOWR(ION_IOC_MAGIC, 7, \
-                                                struct ion_flush_data)
 #define ION_IOC_CLEAN_CACHES	_IOWR(ION_IOC_MAGIC, 20, \
 						struct ion_flush_data)
 /**
@@ -833,8 +831,6 @@ struct ion_flag_data {
  *
  * Invalidate the caches of the handle specified.
  */
-#define ION_IOC_INV_CACHES_OLD	_IOWR(ION_IOC_MAGIC, 8, \
-                                                struct ion_flush_data)
 #define ION_IOC_INV_CACHES	_IOWR(ION_IOC_MAGIC, 21, \
 						struct ion_flush_data)
 /**
@@ -842,8 +838,6 @@ struct ion_flag_data {
  *
  * Clean and invalidate the caches of the handle specified.
  */
-#define ION_IOC_CLEAN_INV_CACHES_OLD	_IOWR(ION_IOC_MAGIC, 9, \
-                                                struct ion_flush_data)
 #define ION_IOC_CLEAN_INV_CACHES	_IOWR(ION_IOC_MAGIC, 22, \
 						struct ion_flush_data)
 
@@ -853,8 +847,6 @@ struct ion_flag_data {
  * Gets the flags of the current handle which indicate cachability,
  * secure state etc.
  */
-#define ION_IOC_GET_FLAGS_OLD		_IOWR(ION_IOC_MAGIC, 10, \
-						struct ion_flag_data)
 #define ION_IOC_GET_FLAGS		_IOWR(ION_IOC_MAGIC, 23, \
 						struct ion_flag_data)
 
