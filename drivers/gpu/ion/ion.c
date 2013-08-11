@@ -1526,7 +1526,6 @@ static long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		break;
 	}
 	case ION_IOC_IMPORT:
-	case ION_IOC_IMPORT_OLD:
 	{
 		struct ion_fd_data data;
 		int ret = 0;
@@ -1569,13 +1568,6 @@ static long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		unsigned long start, end;
 		struct ion_handle *handle = NULL;
 		int ret;
-        int cmd2;
-
-        cmd2 = cmd;
-
-        if(cmd == ION_IOC_CLEAN_CACHES_OLD) cmd2=ION_IOC_CLEAN_CACHES;
-        if(cmd == ION_IOC_INV_CACHES_OLD) cmd2=ION_IOC_INV_CACHES;
-        if(cmd == ION_IOC_CLEAN_INV_CACHES_OLD) cmd2=ION_IOC_CLEAN_INV_CACHES;
 
 		if (copy_from_user(&data, (void __user *)arg,
 				sizeof(struct ion_flush_data)))
@@ -1602,7 +1594,7 @@ static long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		ret = ion_do_cache_op(client,
 					data.handle ? data.handle : handle,
 					data.vaddr, data.offset, data.length,
-					cmd2);
+					cmd);
 
 		if (!data.handle)
 			ion_free(client, handle);
