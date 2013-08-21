@@ -557,11 +557,7 @@ static void *snd_usb_audio_probe(struct usb_device *dev,
 	 * not sure how to distinguish analog/digital/unknown,
 	 * assume digital for now
 	 */
-	/* Enable to detect multiple USB audio device when connected
-	 * Increment the device switch count by 1 for every USB device
-	 * connected
-	 */
-	switch_set_state(&sdev, (switch_get_state(&sdev) + 1));
+	switch_set_state(&sdev, STATE_CONNECTED);
 
 	usb_chip[chip->index] = chip;
 	chip->num_interfaces++;
@@ -601,12 +597,7 @@ static void snd_usb_audio_disconnect(struct usb_device *dev, void *ptr)
 
 	mutex_lock(&register_mutex);
 	chip->num_interfaces--;
-
-	/* Decrement the device switch count by 1 for every USB device
-	 * disconnected.
-	 */
-	switch_set_state(&sdev, ((switch_get_state(&sdev) == 0) ? 0 :
-						switch_get_state(&sdev)-1));
+	switch_set_state(&sdev, STATE_DISCONNECTED);
 	if (chip->num_interfaces <= 0) {
 		snd_card_disconnect(card);
 		/* release the pcm resources */
