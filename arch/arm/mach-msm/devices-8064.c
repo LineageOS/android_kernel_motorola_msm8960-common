@@ -390,6 +390,26 @@ struct platform_device apq_cpudai_slimbus_1_tx = {
 	.id = 0x4003,
 };
 
+struct platform_device apq_cpudai_slimbus_2_rx = {
+	.name = "msm-dai-q6",
+	.id = 0x4004,
+};
+
+struct platform_device apq_cpudai_slimbus_2_tx = {
+	.name = "msm-dai-q6",
+	.id = 0x4005,
+};
+
+struct platform_device apq_cpudai_slimbus_3_rx = {
+	.name = "msm-dai-q6",
+	.id = 0x4006,
+};
+
+struct platform_device apq_cpudai_slimbus_3_tx = {
+	.name = "msm-dai-q6",
+	.id = 0x4007,
+};
+
 static struct resource resources_ssbi_pmic1[] = {
 	{
 		.start  = MSM_PMIC1_SSBI_CMD_PHYS,
