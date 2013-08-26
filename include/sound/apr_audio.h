@@ -574,19 +574,6 @@ struct adm_multi_ch_copp_open_command {
 	u32 rate;
 	u8 dev_channel_mapping[8];
 } __packed;
-
-struct adm_multi_channel_copp_open_v3 {
-	struct apr_hdr hdr;
-	u16 flags;
-	u16 mode;
-	u16 endpoint_id1;
-	u16 endpoint_id2;
-	u32 topology_id;
-	u16 channel_config;
-	u16 bit_width;
-	u32 rate;
-	u8  dev_channel_mapping[8];
-};
 #define ADM_CMD_MEMORY_MAP				0x00010C30
 struct adm_cmd_memory_map{
 	struct apr_hdr	hdr;
@@ -927,6 +914,7 @@ struct asm_multi_channel_pcm_fmt_blk {
 				 * An unused channel is set to zero.
 				 */
 };
+
 struct asm_adpcm_cfg {
 	u16 ch_cfg;
 	u16 bits_per_sample;
@@ -1423,7 +1411,7 @@ struct asm_stream_cmd_read{
 	u32	uid;
 } __attribute__((packed));
 
-#define ASM_DATA_CMD_READ_COMPRESSED                     0x00010DBC
+#define ASM_DATA_CMD_READ_COMPRESSED                     0x00010DBF
 struct asm_stream_cmd_read_compressed {
 	struct apr_hdr     hdr;
 	u32	buf_add;
@@ -1495,7 +1483,7 @@ struct asm_data_event_read_done{
 	u32            id;
 } __attribute__((packed));
 
-#define ASM_DATA_EVENT_READ_COMPRESSED_DONE              0x00010DBD
+#define ASM_DATA_EVENT_READ_COMPRESSED_DONE              0x00010DC0
 struct asm_data_event_read_compressed_done {
 	u32            status;
 	u32            buffer_add;
