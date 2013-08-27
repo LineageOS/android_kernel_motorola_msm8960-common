@@ -16,7 +16,7 @@
 #include <mach/irqs.h>
 #include <linux/io.h>
 #include <linux/slab.h>
-#include <linux/pm_qos_params.h>
+#include <linux/pm_qos.h>
 #include <linux/regulator/consumer.h>
 #include <linux/clk.h>
 #include <mach/clk.h>

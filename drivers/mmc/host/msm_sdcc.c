@@ -43,7 +43,7 @@
 #include <linux/gpio.h>
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
-#include <linux/pm_qos_params.h>
+#include <linux/pm_qos.h>
 
 #include <asm/cacheflush.h>
 #include <asm/div64.h>

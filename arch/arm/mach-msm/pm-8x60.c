@@ -20,7 +20,7 @@
 #include <linux/io.h>
 #include <linux/ktime.h>
 #include <linux/pm.h>
-#include <linux/pm_qos_params.h>
+#include <linux/pm_qos.h>
 #include <linux/proc_fs.h>
 #include <linux/smp.h>
 #include <linux/suspend.h>

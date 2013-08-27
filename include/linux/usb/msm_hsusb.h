@@ -21,7 +21,7 @@
 #include <linux/types.h>
 #include <linux/usb/otg.h>
 #include <linux/wakelock.h>
-#include <linux/pm_qos_params.h>
+#include <linux/pm_qos.h>
 
 /**
  * Supported USB modes
@@ -270,7 +270,7 @@ struct msm_otg {
 	unsigned long lpm_flags;
 #define PHY_PWR_COLLAPSED		BIT(0)
 #define PHY_RETENTIONED			BIT(1)
-	struct pm_qos_request_list pm_qos_req_dma;
+	struct pm_qos_request pm_qos_req_dma;
 	int reset_counter;
 	struct workqueue_struct *wq;
 };
