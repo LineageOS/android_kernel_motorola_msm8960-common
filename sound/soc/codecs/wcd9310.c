@@ -8290,17 +8290,17 @@ static int tabla_codec_probe(struct snd_soc_codec *codec)
 		goto err_pdata;
 	}
 
-	snd_soc_add_controls(codec, tabla_snd_controls,
-			     ARRAY_SIZE(tabla_snd_controls));
+//	snd_soc_add_codec_controls(codec, tabla_snd_controls,
+//			     ARRAY_SIZE(tabla_snd_controls));
 	if (TABLA_IS_1_X(control->version))
-		snd_soc_add_controls(codec, tabla_1_x_snd_controls,
+		snd_soc_add_codec_controls(codec, tabla_1_x_snd_controls,
 				     ARRAY_SIZE(tabla_1_x_snd_controls));
 	else
-		snd_soc_add_controls(codec, tabla_2_higher_snd_controls,
+		snd_soc_add_codec_controls(codec, tabla_2_higher_snd_controls,
 				     ARRAY_SIZE(tabla_2_higher_snd_controls));
 
-	snd_soc_dapm_new_controls(dapm, tabla_dapm_widgets,
-				  ARRAY_SIZE(tabla_dapm_widgets));
+//	snd_soc_dapm_new_controls(dapm, tabla_dapm_widgets,
+//				  ARRAY_SIZE(tabla_dapm_widgets));
 
 	snd_soc_dapm_new_controls(dapm, tabla_dapm_aif_in_widgets,
 				  ARRAY_SIZE(tabla_dapm_aif_in_widgets));
@@ -8321,7 +8321,7 @@ static int tabla_codec_probe(struct snd_soc_codec *codec)
 		snd_soc_dapm_add_routes(dapm, audio_i2s_map,
 			ARRAY_SIZE(audio_i2s_map));
 	}
-	snd_soc_dapm_add_routes(dapm, audio_map, ARRAY_SIZE(audio_map));
+//	snd_soc_dapm_add_routes(dapm, audio_map, ARRAY_SIZE(audio_map));
 
 	if (TABLA_IS_1_X(control->version)) {
 		snd_soc_dapm_add_routes(dapm, tabla_1_x_lineout_2_to_4_map,
@@ -8454,7 +8454,7 @@ static int tabla_codec_probe(struct snd_soc_codec *codec)
 					NULL, tabla, &codec_mbhc_debug_ops);
 	}
 #endif
-
+	codec->ignore_pmdown_time = 1;
 	return ret;
 
 err_hphr_ocp_irq:
@@ -8509,13 +8509,18 @@ static struct snd_soc_codec_driver soc_codec_dev_tabla = {
 	.remove	= tabla_codec_remove,
 	.read = tabla_read,
 	.write = tabla_write,
-
 	.readable_register = tabla_readable,
 	.volatile_register = tabla_volatile,
 
 	.reg_cache_size = TABLA_CACHE_SIZE,
 	.reg_cache_default = tabla_reg_defaults,
 	.reg_word_size = 1,
+	.controls = tabla_snd_controls,
+	.num_controls = ARRAY_SIZE(tabla_snd_controls),
+	.dapm_widgets = tabla_dapm_widgets,
+	.num_dapm_widgets = ARRAY_SIZE(tabla_dapm_widgets),
+	.dapm_routes = audio_map,
+	.num_dapm_routes = ARRAY_SIZE(audio_map),
 };
 
 #ifdef CONFIG_PM
@@ -8562,6 +8567,7 @@ static const struct dev_pm_ops tabla_pm_ops = {
 static int __devinit tabla_probe(struct platform_device *pdev)
 {
 	int ret = 0;
+	pr_err("tabla_probe\n");
 	if (wcd9xxx_get_intf_type() == WCD9XXX_INTERFACE_TYPE_SLIMBUS)
 		ret = snd_soc_register_codec(&pdev->dev, &soc_codec_dev_tabla,
 			tabla_dai, ARRAY_SIZE(tabla_dai));

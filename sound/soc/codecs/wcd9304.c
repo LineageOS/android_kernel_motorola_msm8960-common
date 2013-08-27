@@ -4084,7 +4084,7 @@ static int sitar_codec_probe(struct snd_soc_codec *codec)
 		goto err_pdata;
 	}
 
-	snd_soc_add_controls(codec, sitar_snd_controls,
+	snd_soc_add_codec_controls(codec, sitar_snd_controls,
 		ARRAY_SIZE(sitar_snd_controls));
 	snd_soc_dapm_new_controls(dapm, sitar_dapm_widgets,
 		ARRAY_SIZE(sitar_dapm_widgets));
