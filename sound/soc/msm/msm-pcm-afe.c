@@ -495,8 +495,7 @@ static int msm_afe_hw_params(struct snd_pcm_substream *substream,
 			runtime->hw.period_bytes_min,
 			runtime->hw.periods_max);
 	if (ret < 0) {
-		pr_err("Audio Start: Buffer Allocation failed \
-					rc = %d\n", ret);
+		pr_err("Audio Start: Buffer Allocation failed rc = %d\n", ret);
 		mutex_unlock(&prtd->lock);
 		return -ENOMEM;
 	}
