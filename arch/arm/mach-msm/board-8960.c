@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -2210,6 +2210,8 @@ static struct platform_device *sim_devices[] __initdata = {
 	&msm_pcm_routing,
 	&msm_cpudai0,
 	&msm_cpudai1,
+	&msm8960_cpudai_slimbus_2_rx,
+	&msm8960_cpudai_slimbus_2_tx,
 	&msm_cpudai_hdmi_rx,
 	&msm_cpudai_bt_rx,
 	&msm_cpudai_bt_tx,
@@ -2264,6 +2266,8 @@ static struct platform_device *cdp_devices[] __initdata = {
 	&msm_pcm_routing,
 	&msm_cpudai0,
 	&msm_cpudai1,
+	&msm8960_cpudai_slimbus_2_rx,
+	&msm8960_cpudai_slimbus_2_tx,
 	&msm_cpudai_hdmi_rx,
 	&msm_cpudai_bt_rx,
 	&msm_cpudai_bt_tx,
