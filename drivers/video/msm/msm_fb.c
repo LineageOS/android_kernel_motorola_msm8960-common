@@ -3539,7 +3539,6 @@ static int msmfb_mixer_info(struct fb_info *info, unsigned long *argp)
 #endif
 
 DEFINE_SEMAPHORE(msm_fb_ioctl_ppp_sem);
-DEFINE_SEMAPHORE(msm_fb_ioctl_vsync_sem);
 DEFINE_MUTEX(msm_fb_ioctl_lut_sem);
 
 /* Set color conversion matrix from user space */
@@ -3925,12 +3924,12 @@ static int msm_fb_ioctl(struct fb_info *info, unsigned int cmd,
 #endif
 	case MSMFB_VSYNC_CTRL:
 	case MSMFB_OVERLAY_VSYNC_CTRL:
-		down(&msm_fb_ioctl_vsync_sem);
+		down(&msm_fb_ioctl_ppp_sem);
 		if (mdp_rev >= MDP_REV_40)
 			ret = msmfb_overlay_vsync_ctrl(info, argp);
 		else
 			ret = msmfb_vsync_ctrl(info, argp);
-		up(&msm_fb_ioctl_vsync_sem);
+		up(&msm_fb_ioctl_ppp_sem);
 		break;
 	case MSMFB_BLIT:
 		down(&msm_fb_ioctl_ppp_sem);
