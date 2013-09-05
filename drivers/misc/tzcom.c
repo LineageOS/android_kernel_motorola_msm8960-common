@@ -28,7 +28,7 @@
 #include <linux/mutex.h>
 #include <linux/android_pmem.h>
 #include <linux/io.h>
-#include <linux/ion.h>
+#include <linux/msm_ion.h>
 #include <linux/tzcom.h>
 #include <linux/clk.h>
 #include <mach/scm.h>
