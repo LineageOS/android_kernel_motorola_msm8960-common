@@ -515,5 +515,5 @@ OBJS := $(VOSS_OBJS) \
 
 
 # Module information used by KBuild framework
-obj-m   := $(MODNAME).o
+obj-$(CONFIG_PRIMA_WLAN)   := $(MODNAME).o
 $(MODNAME)-y += $(OBJS)
