@@ -887,6 +887,10 @@ void free_initrd_mem(unsigned long start, unsigned long end)
 {
 	unsigned long reclaimed_initrd_mem;
 	if (!keep_initrd) {
+		if (start == initrd_start)
+			start = round_down(start, PAGE_SIZE);
+		if (end == initrd_end)
+			end = round_up(end, PAGE_SIZE);
 		poison_init_mem((void *)start, PAGE_ALIGN(end) - start);
 		reclaimed_initrd_mem = free_area(__phys_to_pfn(__pa(start)),
 					    __phys_to_pfn(__pa(end)),
