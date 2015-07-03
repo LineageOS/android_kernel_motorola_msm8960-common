@@ -1201,7 +1201,7 @@ int mmc_resume_bus(struct mmc_host *host)
 		host->bus_ops->resume(host);
 	}
 
-	if (host->bus_ops->detect && !host->bus_dead)
+	if (host->bus_ops && host->bus_ops->detect && !host->bus_dead)
 		host->bus_ops->detect(host);
 
 	mmc_bus_put(host);
@@ -2007,10 +2007,8 @@ EXPORT_SYMBOL(mmc_suspend_host);
  *	mmc_resume_host - resume a previously suspended host
  *	@host: mmc host
  */
-#define MMC_MAX_RESUME_ATTEMPTS 5
 int mmc_resume_host(struct mmc_host *host)
 {
-	int try = 0;
 	int err = 0;
 
 	mmc_bus_get(host);
@@ -2039,28 +2037,12 @@ int mmc_resume_host(struct mmc_host *host)
 		}
 		BUG_ON(!host->bus_ops->resume);
 		err = host->bus_ops->resume(host);
-
-		for (try = 1; err && try <= MMC_MAX_RESUME_ATTEMPTS; try++) {
-			printk(KERN_WARNING "%s: error %d during resume; "
-					    "trying to recover (attempt "
-					    "%d of %d)...\n",
-					    mmc_hostname(host), err, try,
-					    MMC_MAX_RESUME_ATTEMPTS);
-			mmc_power_off(host);
-			msleep(100 * try);	/* plenty of settling time */
-			mmc_power_up(host);
-			mmc_select_voltage(host, host->ocr);
-			msleep(100 * try);	/* take it slower each time */
-			err = host->bus_ops->resume(host);
-		}
 		if (err) {
 			printk(KERN_WARNING "%s: error %d during resume "
 					    "(card was removed?)\n",
 					    mmc_hostname(host), err);
 			err = 0;
-		} else if (try > 1)
-			printk(KERN_WARNING "%s: card recovery successful\n",
-					    mmc_hostname(host));
+		}
 	}
 	host->pm_flags &= ~MMC_PM_KEEP_POWER;
 	mmc_bus_put(host);

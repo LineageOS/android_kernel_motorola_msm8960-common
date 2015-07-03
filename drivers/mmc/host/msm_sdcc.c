@@ -1820,6 +1820,7 @@ msmsdcc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 {
 	struct msmsdcc_host *host = mmc_priv(mmc);
 	unsigned long		flags;
+	unsigned long timeout_ms = MSM_MMC_REQ_TIMEOUT;
 
 	/*
 	 * Get the SDIO AL client out of LPM.
@@ -1855,10 +1856,17 @@ msmsdcc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 
 	/*
 	 * Kick the software command timeout timer here.
-	 * Timer expires in 10 secs.
+	 * Timer expires in 500ms for CMD13
+	 * Timer expires in cmd_timeout_ms + 500ms, if specified
+	 * Timer expires in 8 secs for others
 	 */
+	if (mrq->cmd->opcode == MMC_SEND_STATUS)
+		timeout_ms = 500;
+	else if (mrq->cmd->cmd_timeout_ms &&
+		 mrq->cmd->cmd_timeout_ms + 500 > timeout_ms)
+		timeout_ms = mrq->cmd->cmd_timeout_ms + 500;
 	mod_timer(&host->req_tout_timer,
-			(jiffies + msecs_to_jiffies(MSM_MMC_REQ_TIMEOUT)));
+		  (jiffies + msecs_to_jiffies(timeout_ms)));
 
 	host->curr.mrq = mrq;
 	if (mrq->data && (mrq->data->flags & MMC_DATA_WRITE)) {
@@ -2825,7 +2833,7 @@ msmsdcc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 			"cmd19_tuning_in_progress but SDCC clocks are OFF\n");
 
 	/* Let interrupts be disabled if the host is powered off */
-	if (ios->power_mode != MMC_POWER_OFF && host->sdcc_irq_disabled) {
+	if (ios->power_mode == MMC_POWER_ON && host->sdcc_irq_disabled) {
 		enable_irq(host->core_irqres->start);
 		host->sdcc_irq_disabled = 0;
 	}
@@ -4270,6 +4278,8 @@ static void msmsdcc_req_tout_timer_hdlr(unsigned long data)
 	struct msmsdcc_host *host = (struct msmsdcc_host *)data;
 	struct mmc_request *mrq;
 	unsigned long flags;
+
+	pr_warning("%s: request timeout\n", mmc_hostname(host->mmc));
 
 	spin_lock_irqsave(&host->lock, flags);
 	if (host->dummy_52_sent) {
