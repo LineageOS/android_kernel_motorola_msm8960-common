@@ -2847,6 +2847,24 @@ static struct mmc_platform_data msm8960_sdc3_data = {
 };
 #endif
 
+/* Call before msm8960_init_mmc() */
+void __init msm8960_preset_mmc_params(int host,
+		const struct msm_mmc_pad_drv *sdc_pad_drv_on)
+{
+	switch (host) {
+#ifdef CONFIG_MMC_MSM_SDC3_SUPPORT
+	/* SDC3: External card slot */
+	case 3:
+		if (sdc_pad_drv_on)
+			memcpy(sdc3_pad_drv_on_cfg, sdc_pad_drv_on,
+					sizeof(sdc3_pad_drv_on_cfg));
+		break;
+#endif
+	default:
+		break;
+	}
+}
+
 void __init msm8960_init_mmc(unsigned sd_detect)
 {
 #ifdef CONFIG_MMC_MSM_SDC1_SUPPORT
