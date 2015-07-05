@@ -337,6 +337,8 @@ extern struct msm_camera_board_info msm8960_camera_board_info;
 void msm8960_init_cam(void);
 void msm8960_init_fb(void);
 void msm8960_init_pmic(void);
+struct msm_mmc_pad_drv;
+void msm8960_preset_mmc_params(int, const struct msm_mmc_pad_drv *);
 void msm8960_init_mmc(unsigned sd_detect);
 int msm8960_init_gpiomux(void);
 unsigned char msm8960_hdmi_as_primary_selected(void);
