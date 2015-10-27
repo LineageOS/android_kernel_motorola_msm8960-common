@@ -4571,6 +4571,9 @@ static int iw_set_packet_filter_params(struct net_device *dev, struct iw_request
 
               hddLog(VOS_TRACE_LEVEL_INFO, "Data Offset %d Data Len %d\n",
                      pRequest->paramsData[i].dataOffset, pRequest->paramsData[i].dataLength);
+              if ((sizeof(packetFilterSetReq.paramsData[i].compareData)) <
+                    (pRequest->paramsData[i].dataLength))
+                    return -EINVAL;
               
               memcpy(&packetFilterSetReq.paramsData[i].compareData, 
                       pRequest->paramsData[i].compareData, pRequest->paramsData[i].dataLength);
