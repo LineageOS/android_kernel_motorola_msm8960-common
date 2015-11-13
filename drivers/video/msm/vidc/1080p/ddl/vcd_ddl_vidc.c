@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2010-2013, 2015, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -570,7 +570,6 @@ void ddl_vidc_encode_init_codec(struct ddl_client_context *ddl)
 	const u32 recon_bufs = 4;
 	u32 h263_cpfc_enable = false;
 	u32 scaled_frame_rate;
-	u32 pic_order_count = false;
 
 	ddl_vidc_encode_set_profile_level(ddl);
 	vidc_1080p_set_encode_frame_size(encoder->frame_size.width,
@@ -591,14 +590,12 @@ void ddl_vidc_encode_init_codec(struct ddl_client_context *ddl)
 		(DDL_FRAMERATE_SCALE(DDL_INITIAL_FRAME_RATE)
 		 != scaled_frame_rate))
 		h263_cpfc_enable = true;
-	if (encoder->codec.codec == VCD_CODEC_H264)
-		pic_order_count = true;
 
 	vidc_sm_set_extended_encoder_control(&ddl->shared_mem
 		[ddl->command_channel], hdr_ext_control,
 		r_cframe_skip, false, 0,
 		h263_cpfc_enable, encoder->sps_pps.sps_pps_for_idr_enable_flag,
-		pic_order_count, encoder->closed_gop, encoder->
+		encoder->pic_order_cnt_type, encoder->closed_gop, encoder->
 		avc_delimiter_enable, encoder->vui_timinginfo_enable,
 		encoder->bitstream_restrict_enable);
 	if (encoder->vui_timinginfo_enable) {

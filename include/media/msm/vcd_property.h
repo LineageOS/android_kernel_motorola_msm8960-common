@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2010-2013, 2015, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -61,7 +61,8 @@
 #define VCD_I_FREE_EXT_METABUFFER (VCD_START_BASE + 0x2D)
 #define VCD_I_ENABLE_SEC_METADATA (VCD_START_BASE + 0x2E)
 #define VCD_I_ENABLE_VUI_BITSTREAM_RESTRICT_FLAG (VCD_START_BASE + 0x2F)
-#define VCD_I_GET_CURR_PERF_LEVEL (VCD_START_BASE + 0x2F)
+#define VCD_I_GET_CURR_PERF_LEVEL (VCD_START_BASE + 0x30)
+#define VCD_I_PIC_ORDER_CNT_TYPE (VCD_START_BASE + 0x31)
 
 #define VCD_START_REQ      (VCD_START_BASE + 0x1000)
 #define VCD_I_REQ_IFRAME   (VCD_START_REQ + 0x1)
@@ -409,4 +410,9 @@ struct vcd_property_meta_buffer {
 struct vcd_property_bitstream_restrict_enable {
 	u32 bitstream_restrict_enable_flag;
 };
+
+struct vcd_property_pic_order_cnt_type {
+	u32 poc_type;
+};
+
 #endif
