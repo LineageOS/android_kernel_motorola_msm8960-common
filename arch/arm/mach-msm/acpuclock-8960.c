@@ -146,11 +146,7 @@ static struct scalable scalable_8960[] = {
 			.hfpll_base      = MSM_HFPLL_BASE + 0x200,
 			.aux_clk_sel     = MSM_ACC0_BASE  + 0x014,
 			.l2cpmr_iaddr    = L2CPUCPMR_IADDR,
-#ifdef CONFIG_CPU_OVERCLOCK
 			.vreg[VREG_CORE] = { "krait0",     1350000 },
-#else
-			.vreg[VREG_CORE] = { "krait0",     1300000 },
-#endif
 			.vreg[VREG_MEM]  = { "krait0_mem", 1150000,
 					     RPM_VREG_VOTER1,
 					     RPM_VREG_ID_PM8921_L24 },
