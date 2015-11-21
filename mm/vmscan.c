@@ -1134,21 +1134,8 @@ static void lru_list_move(struct list_head * list, struct list_head *head)
 	prev = list->prev;
 	next = list->next;
 
-	if (next == LIST_POISON1) {
-		smp_send_all_cpu_backtrace_other_cpu_first();
-		printk(KERN_ERR"lru_list_move corruption, %p->next is LIST_POISON1 (%p)\n",
-		list, LIST_POISON1);
-		return;
-	}
-	if (prev == LIST_POISON2) {
-		smp_send_all_cpu_backtrace_other_cpu_first();
-		printk(KERN_ERR"lru_list_move corruption, %p->prev is LIST_POISON2 (%p)\n",
-		list, LIST_POISON2);
-		return;
-	}
 	if ((prev->next != list) || (next->prev != list)) {
-		smp_send_all_cpu_backtrace_other_cpu_first();
-		printk(KERN_ERR"BUG! list = %p, prev->next = %p, next->prev=%p \n",
+		printk(KERN_ERR"BUG! list = %p, prev->next = %p, next->prev=%p\n",
 			list, prev->next, next->prev);
 		BUG();
 	}
