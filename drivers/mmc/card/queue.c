@@ -18,6 +18,7 @@
 
 #include <linux/mmc/card.h>
 #include <linux/mmc/host.h>
+#include <linux/sched.h>
 #include "queue.h"
 
 #define MMC_QUEUE_BOUNCESZ	65536
@@ -52,6 +53,7 @@ static int mmc_queue_thread(void *d)
 	struct mmc_queue *mq = d;
 	struct request_queue *q = mq->queue;
 	struct request *req;
+	struct sched_param scheduler_params = {0};
 
 #ifdef CONFIG_MMC_PERF_PROFILING
 	ktime_t start, diff;
@@ -59,6 +61,9 @@ static int mmc_queue_thread(void *d)
 	unsigned long bytes_xfer;
 #endif
 
+
+	scheduler_params.sched_priority = 1;
+	sched_setscheduler(current, SCHED_FIFO, &scheduler_params);
 
 	current->flags |= PF_MEMALLOC;
 
