@@ -1089,7 +1089,14 @@ static iw_softap_disassoc_sta(struct net_device *dev,
 {
     hdd_adapter_t *pHostapdAdapter = (netdev_priv(dev));
     v_U8_t *peerMacAddr;    
-    
+   
+    if (!capable(CAP_NET_ADMIN))
+    {
+      VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
+		FL("permission check failed"));
+      return -EPERM;
+    }
+
     ENTER();
     /* the comparison below is needed since if iwpriv tool is used for calling this ioctl
      * data is passed in extra (less than 16 octets); however in android wifi framework
