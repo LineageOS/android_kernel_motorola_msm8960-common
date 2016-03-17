@@ -4546,6 +4546,12 @@ static int iw_set_packet_filter_params(struct net_device *dev, struct iw_request
     tSirRcvFltPktClearParam    packetFilterClrReq;
     int i=0;
 
+    if (!capable(CAP_NET_ADMIN)) {
+        VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
+                  FL("permission check failed"));
+        return -EPERM;
+    }
+
     if ((WLAN_HDD_GET_CTX(pAdapter))->cfg_ini->disablePacketFilter)
     {
          hddLog(VOS_TRACE_LEVEL_FATAL, "%s: Packet Filtering Disabled. Returning ",
