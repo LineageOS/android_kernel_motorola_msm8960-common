@@ -4423,6 +4423,13 @@ static int iw_clear_dynamic_mcbc_filter(struct net_device *dev, struct iw_reques
     hdd_adapter_t *pAdapter = WLAN_HDD_GET_PRIV_PTR(dev);
     hdd_context_t *pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
 
+    if (!capable(CAP_NET_ADMIN))
+    {
+      VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
+		FL("permission check failed"));
+      return -EPERM;
+    }
+
     hddLog(VOS_TRACE_LEVEL_INFO_HIGH, "%s: ", __FUNCTION__);
 
     pHddCtx->dynamic_mcbc_filter.enableCfg = FALSE; 
