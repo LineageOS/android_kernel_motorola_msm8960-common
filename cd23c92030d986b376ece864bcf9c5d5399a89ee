@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7faddb67_0d94d936",
+        "filename": "arch/arm/mach-msm/Kconfig",
+        "patchSetId": 1
+      },
+      "lineNbr": 2301,
+      "author": {
+        "id": 6606
+      },
+      "writtenOn": "2016-03-29T12:50:22Z",
+      "side": 1,
+      "message": "Not sure why this exists as default no when it is automatically selected for ARCH_MSM8960 above.",
+      "range": {
+        "startLine": 2301,
+        "startChar": 9,
+        "endLine": 2301,
+        "endChar": 10
+      },
+      "revId": "cd23c92030d986b376ece864bcf9c5d5399a89ee",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
