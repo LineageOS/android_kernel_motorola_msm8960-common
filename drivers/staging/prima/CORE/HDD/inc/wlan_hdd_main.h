@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -132,6 +132,8 @@
 #define WLAN_HDD_PUBLIC_ACTION_FRAME 4
 #define WLAN_HDD_PUBLIC_ACTION_FRAME_OFFSET 24
 #define WLAN_HDD_PUBLIC_ACTION_FRAME_TYPE_OFFSET 30
+
+#define MAX_USER_COMMAND_SIZE 4096
 
 typedef struct hdd_tx_rx_stats_s
 {
