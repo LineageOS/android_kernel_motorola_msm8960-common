@@ -585,7 +585,7 @@ int kgsl_device_snapshot(struct kgsl_device *device, int hang)
 	device->snapshot_frozen = (hang) ? 1 : 0;
 
 	/* log buffer info to aid in ramdump recovery */
-	KGSL_DRV_ERR(device, "snapshot created at va %p pa %lx size %d\n",
+	KGSL_DRV_ERR(device, "snapshot created at va %pK pa %lx size %d\n",
 			device->snapshot, __pa(device->snapshot),
 			device->snapshot_size);
 	if (hang)

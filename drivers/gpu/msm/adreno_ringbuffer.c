@@ -133,7 +133,7 @@ err:
 		if (!adreno_dump_and_recover(rb->device)) {
 			if (context && context->flags & CTXT_FLAGS_GPU_HANG) {
 				KGSL_CTXT_WARN(rb->device,
-				"Context %p caused a gpu hang. Will not accept commands for context %d\n",
+				"Context %pK caused a gpu hang. Will not accept commands for context %d\n",
 				context, context->id);
 				return -EDEADLK;
 			}
@@ -853,7 +853,7 @@ static bool _parse_ibs(struct kgsl_device_private *dev_priv,
 
 	level++;
 
-	KGSL_CMD_INFO(dev_priv->device, "ib: gpuaddr:0x%08x, wc:%d, hptr:%p\n",
+	KGSL_CMD_INFO(dev_priv->device, "ib: gpuaddr:0x%08x, wc:%d, hptr:%pK\n",
 		gpuaddr, sizedwords, hostaddr);
 
 	mb();
@@ -875,7 +875,7 @@ static bool _parse_ibs(struct kgsl_device_private *dev_priv,
 			break;
 		default:
 			KGSL_CMD_ERR(dev_priv->device, "unexpected type: "
-				"type:%d, word:0x%08x @ 0x%p, gpu:0x%08x\n",
+				"type:%d, word:0x%08x @ 0x%pK, gpu:0x%08x\n",
 				*hostaddr >> 30, *hostaddr, hostaddr,
 				gpuaddr+4*(sizedwords-dwords_left));
 			cur_ret = false;
@@ -886,7 +886,7 @@ static bool _parse_ibs(struct kgsl_device_private *dev_priv,
 		if (!cur_ret) {
 			KGSL_CMD_ERR(dev_priv->device,
 				"bad sub-type: #:%d/%d, v:0x%08x"
-				" @ 0x%p[gb:0x%08x], level:%d\n",
+				" @ 0x%pK[gb:0x%08x], level:%d\n",
 				sizedwords-dwords_left, sizedwords, *hostaddr,
 				hostaddr, gpuaddr+4*(sizedwords-dwords_left),
 				level);
@@ -906,7 +906,7 @@ static bool _parse_ibs(struct kgsl_device_private *dev_priv,
 		if (dwords_left < 0) {
 			KGSL_CMD_ERR(dev_priv->device,
 				"bad count: c:%d, #:%d/%d, "
-				"v:0x%08x @ 0x%p[gb:0x%08x], level:%d\n",
+				"v:0x%08x @ 0x%pK[gb:0x%08x], level:%d\n",
 				count, sizedwords-(dwords_left+count),
 				sizedwords, *(hostaddr-count), hostaddr-count,
 				gpuaddr+4*(sizedwords-(dwords_left+count)),
@@ -926,7 +926,7 @@ done:
 	if (!ret)
 		KGSL_DRV_ERR(dev_priv->device,
 			"parsing failed: gpuaddr:0x%08x, "
-			"host:0x%p, wc:%d\n", gpuaddr, hoststart, sizedwords);
+			"host:0x%pK, wc:%d\n", gpuaddr, hoststart, sizedwords);
 
 	level--;
 
@@ -958,7 +958,7 @@ adreno_ringbuffer_issueibcmds(struct kgsl_device_private *dev_priv,
 	drawctxt = context->devctxt;
 
 	if (drawctxt->flags & CTXT_FLAGS_GPU_HANG) {
-		KGSL_CTXT_WARN(device, "Context %p caused a gpu hang.."
+		KGSL_CTXT_WARN(device, "Context %pK caused a gpu hang.."
 			" will not accept commands for context %d\n",
 			drawctxt, drawctxt->id);
 		return -EDEADLK;
