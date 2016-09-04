@@ -1120,7 +1120,7 @@ static int get_battery_uvolts(struct pm8921_bms_chip *chip, int *uvolts)
 
 static int adc_based_ocv(struct pm8921_bms_chip *chip, int *ocv)
 {
-	int vbatt, rbatt, ibatt_ua, rc;
+	int vbatt = 0, rbatt, ibatt_ua, rc;
 
 	rc = get_battery_uvolts(chip, &vbatt);
 	if (rc) {
@@ -1676,7 +1676,7 @@ EXPORT_SYMBOL(pm8921_bms_get_vsense_avg);
 
 int pm8921_bms_get_battery_current(int *result_ua)
 {
-	int vsense;
+	int vsense = 0;
 
 	if (!the_chip) {
 		pr_err("called before initialization\n");

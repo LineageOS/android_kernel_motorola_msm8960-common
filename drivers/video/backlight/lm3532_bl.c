@@ -838,7 +838,7 @@ static ssize_t lm3532_registers_show(struct device *dev,
 	struct lm3532_bl *data = dev_get_drvdata(dev);
 	int reg_count = sizeof(lm3532_regs) / sizeof(lm3532_regs[0]);
 	int i, n = 0;
-	uint8_t value;
+	uint8_t value = 0;
 
 	pr_debug("%s: reading registers\n", __func__);
 	for (i = 0, n = 0; i < reg_count; i++) {
