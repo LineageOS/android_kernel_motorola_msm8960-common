@@ -70,6 +70,8 @@ struct smd_pkt_dev {
 	unsigned ch_size;
 	uint open_modem_wait;
 
+	int consecutive_too_small_reads;
+
 	int has_reset;
 	int do_reset_notification;
 	struct completion ch_allocated;
@@ -229,6 +231,7 @@ ssize_t smd_pkt_read(struct file *file,
 	struct smd_pkt_dev *smd_pkt_devp;
 	struct smd_channel *chl;
 	unsigned long flags;
+	bool discard = false;
 
 	D(KERN_ERR "%s: read %i bytes\n",
 	  __func__, count);
@@ -281,14 +284,33 @@ wait_for_packet:
 
 	if (pkt_size > count) {
 		pr_err("packet size %i > buffer size %i,", pkt_size, count);
-		mutex_unlock(&smd_pkt_devp->rx_lock);
-		return -ETOOSMALL;
+
+		/*
+		 * Observed hitting the above condition with pkt_size == 5434,
+		 * count == 2014, DATA6_CNTL, on XT897 on Elisa Saunalahti network
+		 * shortly after most bootups, with the message being repeated every
+		 * second. Mobile data would not go up again until a reboot (though an
+		 * ongoing connection would continue to work).
+		 *
+		 * To avoid that, discard the packet after 3 consecutive failures to
+		 * read anything due to too small a buffer.
+		 */
+
+		/* i == 1 is DATA6_CNTL per smd_ch_name[] */
+		if (++smd_pkt_devp->consecutive_too_small_reads >= 3 && smd_pkt_devp->i == 1) {
+			pr_info("discarding the packet to avoid stuck qmuxd");
+			discard = true;
+		} else {
+			mutex_unlock(&smd_pkt_devp->rx_lock);
+			return -ETOOSMALL;
+		}
 	}
+	smd_pkt_devp->consecutive_too_small_reads = 0;
 
 	bytes_read = 0;
 	do {
 		r = smd_read_user_buffer(smd_pkt_devp->ch,
-					 (buf + bytes_read),
+					 discard ? NULL : (buf + bytes_read),
 					 (pkt_size - bytes_read));
 		if (r < 0) {
 			mutex_unlock(&smd_pkt_devp->rx_lock);
@@ -306,7 +328,9 @@ wait_for_packet:
 			return notify_reset(smd_pkt_devp);
 		}
 	} while (pkt_size != bytes_read);
-	D_DUMP_BUFFER("read: ", bytes_read, buf);
+	if (!discard)
+		D_DUMP_BUFFER("read: ", bytes_read, buf);
+
 	mutex_unlock(&smd_pkt_devp->rx_lock);
 
 	mutex_lock(&smd_pkt_devp->ch_lock);
