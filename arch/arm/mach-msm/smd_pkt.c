@@ -349,6 +349,9 @@ wait_for_packet:
 	/* check and wakeup read threads waiting on this device */
 	check_and_wakeup_reader(smd_pkt_devp);
 
+	if (discard)
+		return -ETOOSMALL;
+
 	return bytes_read;
 }
 
