@@ -49,8 +49,7 @@ CONFIG_KERNEL_LZMA=y
 # CONFIG_KERNEL_LZO is not set
 CONFIG_DEFAULT_HOSTNAME="(none)"
 CONFIG_SWAP=y
-CONFIG_SYSVIPC=y
-CONFIG_SYSVIPC_SYSCTL=y
+# CONFIG_SYSVIPC is not set
 # CONFIG_POSIX_MQUEUE is not set
 # CONFIG_BSD_PROCESS_ACCT is not set
 # CONFIG_FHANDLE is not set
@@ -98,7 +97,6 @@ CONFIG_RT_GROUP_SCHED=y
 # CONFIG_BLK_CGROUP is not set
 CONFIG_NAMESPACES=y
 # CONFIG_UTS_NS is not set
-# CONFIG_IPC_NS is not set
 # CONFIG_USER_NS is not set
 # CONFIG_PID_NS is not set
 CONFIG_NET_NS=y
@@ -661,8 +659,6 @@ CONFIG_CPU_FREQ_MSM=y
 #
 # At least one emulation must be selected
 #
-# CONFIG_FPE_NWFPE is not set
-# CONFIG_FPE_FASTFPE is not set
 CONFIG_VFP=y
 CONFIG_VFPv3=y
 CONFIG_NEON=y
