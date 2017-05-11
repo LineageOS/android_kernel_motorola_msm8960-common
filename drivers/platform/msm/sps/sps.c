@@ -89,10 +89,12 @@ static char *debugfs_buf;
 static int debugfs_buf_size;
 static int debugfs_buf_used;
 static int wraparound;
+static struct mutex sps_debugfs_lock;
 
 /* record debug info for debugfs */
 void sps_debugfs_record(const char *msg)
 {
+	mutex_lock(&sps_debugfs_lock);
 	if (sps_debugfs_enabled) {
 		if (debugfs_buf_used + MAX_MSG_LEN >= debugfs_buf_size) {
 			debugfs_buf_used = 0;
@@ -106,6 +108,7 @@ void sps_debugfs_record(const char *msg)
 					debugfs_buf_size - debugfs_buf_used,
 					"\n**** end line of sps log ****\n\n");
 	}
+	mutex_unlock(&sps_debugfs_lock);
 }
 
 /* read the recorded debug info to userspace */
@@ -115,6 +118,7 @@ static ssize_t sps_read_info(struct file *file, char __user *ubuf,
 	int ret;
 	int size;
 
+	mutex_lock(&sps_debugfs_lock);
 	if (wraparound)
 		size = debugfs_buf_size - MAX_MSG_LEN;
 	else
@@ -122,6 +126,8 @@ static ssize_t sps_read_info(struct file *file, char __user *ubuf,
 
 	ret = simple_read_from_buffer(ubuf, count, ppos,
 			debugfs_buf, size);
+
+	mutex_unlock(&sps_debugfs_lock);
 
 	return ret;
 }
@@ -147,6 +153,7 @@ static ssize_t sps_set_info(struct file *file, const char __user *buf,
 
 	pr_info("sps:debugfs buffer size is %dKB\n", buf_size_kb);
 
+	mutex_lock(&sps_debugfs_lock);
 	if (sps_debugfs_enabled && (buf_size_kb == 0)) {
 		sps_debugfs_enabled = false;
 		detailed_debug_on = false;
@@ -163,6 +170,7 @@ static ssize_t sps_set_info(struct file *file, const char __user *buf,
 		if (!debugfs_buf) {
 			debugfs_buf_size = 0;
 			pr_err("sps:fail to allocate memory for debug_fs.\n");
+			mutex_unlock(&sps_debugfs_lock);
 			return -ENOMEM;
 		}
 
@@ -175,6 +183,7 @@ static ssize_t sps_set_info(struct file *file, const char __user *buf,
 		pr_info("sps:should disable debugfs before change "
 				"buffer size.\n");
 
+	mutex_unlock(&sps_debugfs_lock);
 	return sps_debugfs_enabled;
 }
 
@@ -206,6 +215,8 @@ static void sps_debugfs_init(void)
 		debugfs_remove(dent);
 		return;
 	}
+
+	mutex_init(&sps_debugfs_lock);
 }
 
 static void sps_debugfs_exit(void)

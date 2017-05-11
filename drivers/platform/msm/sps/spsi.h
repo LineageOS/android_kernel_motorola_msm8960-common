@@ -37,28 +37,17 @@
 extern u32 sps_debugfs_enabled;
 extern u32 detailed_debug_on;
 #define MAX_MSG_LEN 80
-#define SPS_DEBUGFS(msg, args...) do {					\
-			char buf[MAX_MSG_LEN];		\
-			snprintf(buf, MAX_MSG_LEN, msg"\n", ##args);	\
-			sps_debugfs_record(buf);	\
-		} while (0)
 #define SPS_ERR(msg, args...) do {					\
 			pr_err(msg, ##args);	\
-			if (unlikely(sps_debugfs_enabled))	\
-				SPS_DEBUGFS(msg, ##args);	\
 		} while (0)
 #define SPS_INFO(msg, args...) do {					\
 			pr_info(msg, ##args);	\
-			if (unlikely(sps_debugfs_enabled))	\
-				SPS_DEBUGFS(msg, ##args);	\
 		} while (0)
 #define SPS_DBG(msg, args...) do {					\
 			if (unlikely(detailed_debug_on))	\
 				pr_info(msg, ##args);	\
 			else	\
 				pr_debug(msg, ##args);	\
-			if (unlikely(sps_debugfs_enabled))	\
-				SPS_DEBUGFS(msg, ##args);	\
 		} while (0)
 #else
 #define	SPS_DBG(x...)		pr_debug(x)
