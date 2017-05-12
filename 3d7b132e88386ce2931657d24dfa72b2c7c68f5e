@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a486d77_9f1afd15",
+        "filename": "fs/exec.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 1541,
+      "author": {
+        "id": 16914
+      },
+      "writtenOn": "2017-05-12T21:58:03Z",
+      "side": 1,
+      "message": "The order of these conditions has been reversed in the latest version of the upstream patch",
+      "range": {
+        "startLine": 1541,
+        "startChar": 4,
+        "endLine": 1541,
+        "endChar": 55
+      },
+      "revId": "3d7b132e88386ce2931657d24dfa72b2c7c68f5e",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
