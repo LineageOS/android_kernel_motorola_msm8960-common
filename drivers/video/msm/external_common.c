@@ -1817,6 +1817,7 @@ bool hdmi_common_get_video_format_from_drv_data(struct msm_fb_data_type *mfd)
 	uint32 format;
 	struct fb_var_screeninfo *var = &mfd->fbi->var;
 	bool changed = TRUE;
+	uint32_t userformat = var->reserved[3] >> 16;
 
 #ifdef MSM_FB_US_DVI_SUPPORT
 	uint32 new_pix_freq = mfd->var_pixclock / 1000;
@@ -1851,17 +1852,18 @@ bool hdmi_common_get_video_format_from_drv_data(struct msm_fb_data_type *mfd)
 			(mfd->var_vmode & FB_VMODE_DVI_AUDIO) ? true : false;
 		external_common_state->min_ds =
 			(mfd->var_vmode & FB_VMODE_MIN_DS) ? true : false;
-	} else if (var->reserved[3]) {
+	} else if (userformat) {
 		external_common_state->min_ds =
 			(mfd->var_vmode & FB_VMODE_MIN_DS) ? true : false;
 #else
-	if (var->reserved[3]) {
+	if (userformat) {
 #endif
-		format = var->reserved[3]-1;
+		format = userformat-1;
 		DEV_DBG("reserved format is %d\n", format);
 	} else {
-		DEV_DBG("detecting resolution from %dx%d use var->reserved[3]"
-			" to specify mode", mfd->var_xres, mfd->var_yres);
+		DEV_DBG("detecting resolution from %dx%d use top 2 bytes of"
+			" var->reserved[3] to specify mode", mfd->var_xres,
+			mfd->var_yres);
 		switch (mfd->var_xres) {
 		default:
 		case  640:
